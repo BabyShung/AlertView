@@ -7,6 +7,7 @@
 //
 
 #import "ViewController.h"
+#import "AlarmAlertView.h"
 
 @interface ViewController ()
 
@@ -16,12 +17,18 @@
 
 - (void)viewDidLoad {
     [super viewDidLoad];
-    // Do any additional setup after loading the view, typically from a nib.
+    
 }
 
-- (void)didReceiveMemoryWarning {
-    [super didReceiveMemoryWarning];
-    // Dispose of any resources that can be recreated.
+- (IBAction)click:(id)sender {
+    AlarmAlertView *al = [[AlarmAlertView alloc] initWithTitle:@"Title" message:@"hello babe"];
+    [al addActionWithTitle:@"Cancel" handler:^(AlarmAlertButtonItem *item) {
+        NSLog(@"aaaa");
+    }];
+    [al addActionWithTitle:@"OK"];
+    
+    [al show];
 }
+
 
 @end
