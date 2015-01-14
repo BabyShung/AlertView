@@ -46,8 +46,8 @@
     self = [super init];
     if (self) {
         _selfReference = self;
-        _aTitle = [self attributeStringWithTitle:title attributes:@{NSFontAttributeName : [UIFont boldSystemFontOfSize:20]}];
-        _aMessage = [self attributeStringWithTitle:message attributes:@{NSFontAttributeName : [UIFont systemFontOfSize:16]}];
+        _aTitle = title? [self attributeStringWithTitle:title attributes:@{NSFontAttributeName : [UIFont boldSystemFontOfSize:20]}] : nil;
+        _aMessage = message? [self attributeStringWithTitle:message attributes:@{NSFontAttributeName : [UIFont systemFontOfSize:16]}] : nil;
         _theme = [AlarmAlertTheme defaultTheme];
         _theme.popupStyle = style;
         _buttonItems = [NSMutableArray array];
@@ -107,9 +107,9 @@
         [self.contentView addSubview:label];
     }
     
+    self.hLine = [self getLineView];
+    [self.contentView addSubview:self.hLine];
     if ([self twoButtonsOnly]) {
-        self.hLine = [self getLineView];
-        [self.contentView addSubview:self.hLine];
         self.vLine = [self getLineView];
         [self.contentView addSubview:self.vLine];
     }
@@ -124,74 +124,66 @@
     [self setupLayoutAndContraints];
 }
 
-- (UIView *)getLineView
-{
-    UIView *view = [[UIView alloc] init];
-    [view setTranslatesAutoresizingMaskIntoConstraints:NO];
-    view.backgroundColor = [UIColor colorWithRed:0.824 green:0.827 blue:0.831 alpha:1.000];
-    return view;
-}
-
 - (void)setupLayoutAndContraints
 {
-    [self.KeyWindow addConstraint:[NSLayoutConstraint constraintWithItem:self.maskView attribute:NSLayoutAttributeTop relatedBy:NSLayoutRelationEqual toItem:self.KeyWindow attribute:NSLayoutAttributeTop multiplier:1.0 constant:0]];
-    [self.KeyWindow addConstraint:[NSLayoutConstraint constraintWithItem:self.maskView attribute:NSLayoutAttributeLeft relatedBy:NSLayoutRelationEqual toItem:self.KeyWindow attribute:NSLayoutAttributeLeft multiplier:1.0 constant:0]];
-    [self.KeyWindow addConstraint:[NSLayoutConstraint constraintWithItem:self.maskView attribute:NSLayoutAttributeBottom relatedBy:NSLayoutRelationEqual toItem:self.KeyWindow attribute:NSLayoutAttributeBottom multiplier:1.0 constant:0]];
-    [self.KeyWindow addConstraint:[NSLayoutConstraint constraintWithItem:self.maskView attribute:NSLayoutAttributeRight relatedBy:NSLayoutRelationEqual toItem:self.KeyWindow attribute:NSLayoutAttributeRight multiplier:1.0 constant:0]];
+    [self addConstraint:NSLayoutAttributeTop fromSubView:self.maskView toSuperView:self.KeyWindow withPadding:0];
+    [self addConstraint:NSLayoutAttributeLeft fromSubView:self.maskView toSuperView:self.KeyWindow withPadding:0];
+    [self addConstraint:NSLayoutAttributeRight fromSubView:self.maskView toSuperView:self.KeyWindow withPadding:0];
+    [self addConstraint:NSLayoutAttributeBottom fromSubView:self.maskView toSuperView:self.KeyWindow withPadding:0];
 
     [self.contentView.subviews enumerateObjectsUsingBlock:^(UIView *view, NSUInteger index, BOOL *stop)
      {
          if (index == 0) {//title label
              //padding to top
-             [self.contentView addConstraint:[NSLayoutConstraint constraintWithItem:view attribute:NSLayoutAttributeTop relatedBy:NSLayoutRelationEqual toItem:self.contentView attribute:NSLayoutAttributeTop multiplier:1.0 constant:self.theme.popupContentInsets.top]];
+             [self addConstraint:NSLayoutAttributeTop fromSubView:view toSuperView:self.contentView withPadding:self.theme.popupContentInsets.top];
              
              //leftRight
-             [self.contentView addConstraint:[NSLayoutConstraint constraintWithItem:view attribute:NSLayoutAttributeLeft relatedBy:NSLayoutRelationEqual toItem:self.contentView attribute:NSLayoutAttributeLeft multiplier:1.0 constant:self.theme.popupContentInsets.left]];
-             [self.contentView addConstraint:[NSLayoutConstraint constraintWithItem:view attribute:NSLayoutAttributeRight relatedBy:NSLayoutRelationEqual toItem:self.contentView attribute:NSLayoutAttributeRight multiplier:1.0 constant:-self.theme.popupContentInsets.right]];
+             [self addConstraint:NSLayoutAttributeLeft fromSubView:view toSuperView:self.contentView withPadding:self.theme.popupContentInsets.left];
+             [self addConstraint:NSLayoutAttributeRight fromSubView:view toSuperView:self.contentView withPadding:-self.theme.popupContentInsets.right];
          }else {
              UIView *previousSubView = [self.contentView.subviews objectAtIndex:index - 1];
              if (previousSubView) {
-
-                 
                  if ([view isKindOfClass:[UIButton class]]) {//is a button, set height constraint
                      AlarmAlertButton *button = (AlarmAlertButton *)view;
                      //height
-                     [self.contentView addConstraint:[NSLayoutConstraint constraintWithItem:view attribute:NSLayoutAttributeHeight relatedBy:NSLayoutRelationEqual toItem:nil attribute:NSLayoutAttributeNotAnAttribute multiplier:1.0 constant:button.item.buttonHeight]];
+                     [self addWidthHeightContraint:NSLayoutAttributeHeight forView:view constant:button.item.buttonHeight];
                      [button addTarget:self action:@selector(actionButtonPressed:) forControlEvents:UIControlEventTouchUpInside];
                      
-                     //padding to top
-                     [self.contentView addConstraint:[NSLayoutConstraint constraintWithItem:view attribute:NSLayoutAttributeTop relatedBy:NSLayoutRelationEqual toItem:self.hLine attribute:NSLayoutAttributeBottom multiplier:1.0 constant:0]];
-                     
-                     //leftRight
-                     if (button.item == self.buttonItems[0]) {
-                         [self.contentView addConstraint:[NSLayoutConstraint constraintWithItem:view attribute:NSLayoutAttributeLeft relatedBy:NSLayoutRelationEqual toItem:self.contentView attribute:NSLayoutAttributeLeft multiplier:1.0 constant:0]];
-                         [self.contentView addConstraint:[NSLayoutConstraint constraintWithItem:view attribute:NSLayoutAttributeRight relatedBy:NSLayoutRelationEqual toItem:self.vLine attribute:NSLayoutAttributeRight multiplier:1.0 constant:-1]];
-                     }else{
-                         [self.contentView addConstraint:[NSLayoutConstraint constraintWithItem:view attribute:NSLayoutAttributeLeft relatedBy:NSLayoutRelationEqual toItem:self.vLine attribute:NSLayoutAttributeLeft multiplier:1.0 constant:1]];
-                         [self.contentView addConstraint:[NSLayoutConstraint constraintWithItem:view attribute:NSLayoutAttributeRight relatedBy:NSLayoutRelationEqual toItem:self.contentView attribute:NSLayoutAttributeRight multiplier:1.0 constant:0]];
+                     if ([self twoButtonsOnly]) {
+                         //padding to top
+                         [self.contentView addConstraint:[NSLayoutConstraint constraintWithItem:view attribute:NSLayoutAttributeTop relatedBy:NSLayoutRelationEqual toItem:self.hLine attribute:NSLayoutAttributeBottom multiplier:1.0 constant:0]];
+                         //leftRight
+                         if (button.item == self.buttonItems[0]) {
+                             [self addConstraint:NSLayoutAttributeLeft fromSubView:view toSuperView:self.contentView withPadding:0];
+                             [self addConstraint:NSLayoutAttributeRight fromSubView:view toSuperView:self.vLine withPadding:-1];
+                         }else{
+                             [self addConstraint:NSLayoutAttributeLeft fromSubView:view toSuperView:self.vLine withPadding:1];
+                             [self addConstraint:NSLayoutAttributeRight fromSubView:view toSuperView:self.contentView withPadding:0];
+                         }
+                     }else if (self.buttonItems.count == 1){
+                         //padding to top
+                         [self.contentView addConstraint:[NSLayoutConstraint constraintWithItem:view attribute:NSLayoutAttributeTop relatedBy:NSLayoutRelationEqual toItem:self.hLine attribute:NSLayoutAttributeBottom multiplier:1.0 constant:0]];
+                         //leftRight
+                         [self addConstraint:NSLayoutAttributeLeft fromSubView:view toSuperView:self.contentView withPadding:0];
+                         [self addConstraint:NSLayoutAttributeRight fromSubView:view toSuperView:self.contentView withPadding:0];
                      }
-                     
-                     
-                     
-                     
                  }
                  else if ([view isKindOfClass:[UILabel class]]) {
                      //padding to top
                      [self.contentView addConstraint:[NSLayoutConstraint constraintWithItem:view attribute:NSLayoutAttributeTop relatedBy:NSLayoutRelationEqual toItem:previousSubView attribute:NSLayoutAttributeBottom multiplier:1.0 constant:self.theme.contentVerticalPadding]];
-                     
                      //leftRight
-                     [self.contentView addConstraint:[NSLayoutConstraint constraintWithItem:view attribute:NSLayoutAttributeLeft relatedBy:NSLayoutRelationEqual toItem:self.contentView attribute:NSLayoutAttributeLeft multiplier:1.0 constant:self.theme.popupContentInsets.left]];
-                     [self.contentView addConstraint:[NSLayoutConstraint constraintWithItem:view attribute:NSLayoutAttributeRight relatedBy:NSLayoutRelationEqual toItem:self.contentView attribute:NSLayoutAttributeRight multiplier:1.0 constant:-self.theme.popupContentInsets.right]];
+                     [self addConstraint:NSLayoutAttributeLeft fromSubView:view toSuperView:self.contentView withPadding:self.theme.popupContentInsets.left];
+                     [self addConstraint:NSLayoutAttributeRight fromSubView:view toSuperView:self.contentView withPadding:-self.theme.popupContentInsets.right];
                  }
                  else if (view == self.hLine) {
                      //padding to top
                      [self.contentView addConstraint:[NSLayoutConstraint constraintWithItem:view attribute:NSLayoutAttributeTop relatedBy:NSLayoutRelationEqual toItem:previousSubView attribute:NSLayoutAttributeBottom multiplier:1.0 constant:self.theme.contentVerticalPadding]];
                      //height
-                     [self.contentView addConstraint:[NSLayoutConstraint constraintWithItem:view attribute:NSLayoutAttributeHeight relatedBy:NSLayoutRelationEqual toItem:nil attribute:NSLayoutAttributeNotAnAttribute multiplier:1.0 constant:0.5]];
+                     [self addWidthHeightContraint:NSLayoutAttributeHeight forView:view constant:0.5];
                      
                      //leftRight
-                     [self.contentView addConstraint:[NSLayoutConstraint constraintWithItem:view attribute:NSLayoutAttributeLeft relatedBy:NSLayoutRelationEqual toItem:self.contentView attribute:NSLayoutAttributeLeft multiplier:1.0 constant:0]];
-                     [self.contentView addConstraint:[NSLayoutConstraint constraintWithItem:view attribute:NSLayoutAttributeRight relatedBy:NSLayoutRelationEqual toItem:self.contentView attribute:NSLayoutAttributeRight multiplier:1.0 constant:0]];
+                     [self addConstraint:NSLayoutAttributeLeft fromSubView:view toSuperView:self.contentView withPadding:0];
+                     [self addConstraint:NSLayoutAttributeRight fromSubView:view toSuperView:self.contentView withPadding:0];
                  }
                  else if (view == self.vLine) {
                      //padding to top
@@ -199,31 +191,22 @@
                      //centerX
                      [self.contentView addConstraint:[NSLayoutConstraint constraintWithItem:view attribute:NSLayoutAttributeCenterX relatedBy:NSLayoutRelationEqual toItem:self.contentView attribute:NSLayoutAttributeCenterX multiplier:1.0 constant:0]];
                      //width
-                     [self.contentView addConstraint:[NSLayoutConstraint constraintWithItem:view attribute:NSLayoutAttributeWidth relatedBy:NSLayoutRelationEqual toItem:nil attribute:NSLayoutAttributeNotAnAttribute multiplier:1.0 constant:0.5]];
+                     [self addWidthHeightContraint:NSLayoutAttributeWidth forView:view constant:0.5];
                      //to contentView bottom
-                     [self.contentView addConstraint:[NSLayoutConstraint constraintWithItem:view attribute:NSLayoutAttributeBottom relatedBy:NSLayoutRelationEqual toItem:self.contentView attribute:NSLayoutAttributeBottom multiplier:1.0 constant:0]];
+                     [self addConstraint:NSLayoutAttributeBottom fromSubView:view toSuperView:self.contentView withPadding:0];
                  }
-                 
-                 
-                 
              }
          }
          
          if (index == self.contentView.subviews.count - 1) {//buttom padding
-             [self.contentView addConstraint:[NSLayoutConstraint constraintWithItem:view attribute:NSLayoutAttributeBottom relatedBy:NSLayoutRelationEqual toItem:self.contentView attribute:NSLayoutAttributeBottom multiplier:1.0 constant:[self twoButtonsOnly]?0:-(self.theme.popupContentInsets.bottom + 0.0f)]];
+             [self addConstraint:NSLayoutAttributeBottom fromSubView:view toSuperView:self.contentView withPadding:(self.buttonItems.count <= 2)?0:-(self.theme.popupContentInsets.bottom + 0.0f)];
          }
-         
-
          
          [view setContentHuggingPriority:UILayoutPriorityDefaultHigh forAxis:UILayoutConstraintAxisVertical];
          [view setContentHuggingPriority:UILayoutPriorityDefaultHigh forAxis:UILayoutConstraintAxisHorizontal];
          [view setContentCompressionResistancePriority:UILayoutPriorityDefaultHigh forAxis:UILayoutConstraintAxisHorizontal];
          [view setContentCompressionResistancePriority:UILayoutPriorityDefaultHigh forAxis:UILayoutConstraintAxisVertical];
-         
-         
      }];
-        
-    
     
     //contentView w/h less than maskView
     [self.maskView addConstraint:[NSLayoutConstraint constraintWithItem:self.contentView attribute:NSLayoutAttributeHeight relatedBy:NSLayoutRelationLessThanOrEqual toItem:self.maskView attribute:NSLayoutAttributeHeight multiplier:1.0 constant:0]];
@@ -249,7 +232,7 @@
         if (isIPad) {
             self.contentViewWidth = [NSLayoutConstraint constraintWithItem:self.contentView attribute:NSLayoutAttributeWidth relatedBy:NSLayoutRelationEqual toItem:self.maskView attribute:NSLayoutAttributeWidth multiplier:0.4 constant:0];
         }else {
-            self.contentViewWidth = [NSLayoutConstraint constraintWithItem:self.contentView attribute:NSLayoutAttributeWidth relatedBy:NSLayoutRelationEqual toItem:self.maskView attribute:NSLayoutAttributeWidth multiplier:0.85 constant:0];
+            self.contentViewWidth = [NSLayoutConstraint constraintWithItem:self.contentView attribute:NSLayoutAttributeWidth relatedBy:NSLayoutRelationEqual toItem:self.maskView attribute:NSLayoutAttributeWidth multiplier:0 constant:290];
         }
         [self.maskView addConstraint:self.contentViewWidth];
         self.contentViewCenterYConstraint = [NSLayoutConstraint constraintWithItem:self.contentView attribute:NSLayoutAttributeCenterY relatedBy:NSLayoutRelationEqual toItem:self.maskView attribute:NSLayoutAttributeCenterY multiplier:1.0 constant:0];
@@ -424,6 +407,37 @@
     UIMotionEffectGroup *group = [UIMotionEffectGroup new];
     group.motionEffects = @[horizontalMotionEffect, verticalMotionEffect];
     [view addMotionEffect:group];
+}
+
+- (UIView *)getLineView
+{
+    UIView *view = [[UIView alloc] init];
+    [view setTranslatesAutoresizingMaskIntoConstraints:NO];
+    view.backgroundColor = [UIColor colorWithRed:0.824 green:0.827 blue:0.831 alpha:1.000];
+    return view;
+}
+
+- (NSLayoutConstraint *)addConstraint:(NSLayoutAttribute)attribute fromSubView:(UIView*)view toSuperView:(UIView*)superView withPadding:(CGFloat)padding
+{
+    NSLayoutConstraint *constraint = [NSLayoutConstraint constraintWithItem:view
+                                                                  attribute:attribute
+                                                                  relatedBy:NSLayoutRelationEqual
+                                                                     toItem:superView
+                                                                  attribute:attribute
+                                                                 multiplier:1
+                                                                   constant:padding];
+    [view.superview addConstraint:constraint];
+    return constraint;
+}
+
+- (NSLayoutConstraint *)addWidthHeightContraint:(NSLayoutAttribute)attribute forView:(UIView *)view constant:(CGFloat)constant
+{
+    if (attribute == NSLayoutAttributeHeight || attribute == NSLayoutAttributeWidth) {
+        NSLayoutConstraint *constraint = [NSLayoutConstraint constraintWithItem:view attribute:attribute relatedBy:NSLayoutRelationEqual toItem:nil attribute:NSLayoutAttributeNotAnAttribute multiplier:1.0 constant:constant];
+        [view.superview addConstraint:constraint];
+        return constraint;
+    }
+    return nil;
 }
 
 @end

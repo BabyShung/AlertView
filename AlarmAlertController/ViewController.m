@@ -19,6 +19,13 @@
     [super viewDidLoad];
     
 }
+- (IBAction)onebutton:(id)sender {
+    AlarmAlertView *al = [[AlarmAlertView alloc] initWithTitle:@"Title" message:@"hello babe"];
+    [al addActionWithTitle:@"Cancel" handler:^(AlarmAlertButtonItem *item) {
+        NSLog(@"aaaa");
+    }];
+    [al show];
+}
 
 - (IBAction)click:(id)sender {
     AlarmAlertView *al = [[AlarmAlertView alloc] initWithTitle:@"Title" message:@"hello babe"];
@@ -26,9 +33,31 @@
         NSLog(@"aaaa");
     }];
     [al addActionWithTitle:@"OK"];
-    
     [al show];
 }
 
+- (IBAction)multiButtons:(id)sender {
+    AlarmAlertView *al = [[AlarmAlertView alloc] initWithTitle:@"Title" message:@"hello babe"];
+    [al addActionWithTitle:@"What" handler:^(AlarmAlertButtonItem *item) {
+        NSLog(@"bbb");
+    }];
+    [al addActionWithTitle:@"OK"];
+    [al addActionWithTitle:@"OK2"];
+    [al addActionWithTitle:@"Cancel" handler:^(AlarmAlertButtonItem *item) {
+        NSLog(@"aaaa");
+    }];
+
+    [al show];
+}
+
+- (IBAction)actionSheet:(id)sender {
+    AlarmAlertView *al = [[AlarmAlertView alloc] initWithTitle:@"Title" message:@"hello babe" preferredStyle:AAActionSheet];
+    [al addActionWithTitle:@"What" handler:^(AlarmAlertButtonItem *item) {
+        NSLog(@"bbb");
+    }];
+    [al addActionWithTitle:@"OK"];
+    [al addActionWithTitle:@"OK2"];
+    [al show];
+}
 
 @end

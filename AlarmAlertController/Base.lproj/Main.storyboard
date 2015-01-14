@@ -23,18 +23,66 @@
                                     <constraint firstAttribute="width" constant="238" id="J3N-fU-iw3"/>
                                     <constraint firstAttribute="height" constant="99" id="isL-Xp-838"/>
                                 </constraints>
-                                <state key="normal" title="Show">
+                                <state key="normal" title="two buttons">
                                     <color key="titleShadowColor" white="0.5" alpha="1" colorSpace="calibratedWhite"/>
                                 </state>
                                 <connections>
                                     <action selector="click:" destination="BYZ-38-t0r" eventType="touchUpInside" id="A10-eI-ez9"/>
                                 </connections>
                             </button>
+                            <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="Q0I-V8-EqZ">
+                                <rect key="frame" x="217" y="234" width="166" height="59"/>
+                                <color key="backgroundColor" red="0.90588241820000004" green="0.90588241820000004" blue="0.90980398650000005" alpha="1" colorSpace="deviceRGB"/>
+                                <constraints>
+                                    <constraint firstAttribute="width" constant="166" id="4EL-ll-DQm"/>
+                                    <constraint firstAttribute="height" constant="59" id="enP-td-Wkd"/>
+                                </constraints>
+                                <state key="normal" title="multi buttons">
+                                    <color key="titleShadowColor" white="0.5" alpha="1" colorSpace="calibratedWhite"/>
+                                </state>
+                                <connections>
+                                    <action selector="multiButtons:" destination="BYZ-38-t0r" eventType="touchUpInside" id="4q8-5k-R8T"/>
+                                </connections>
+                            </button>
+                            <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="uoz-58-DNv">
+                                <rect key="frame" x="201" y="334" width="198" height="64"/>
+                                <color key="backgroundColor" red="0.90588241820000004" green="0.90588241820000004" blue="0.90980398650000005" alpha="1" colorSpace="deviceRGB"/>
+                                <constraints>
+                                    <constraint firstAttribute="height" constant="64" id="FUO-gV-wwi"/>
+                                    <constraint firstAttribute="width" constant="198" id="eUt-U3-zZm"/>
+                                </constraints>
+                                <state key="normal" title="Action sheet">
+                                    <color key="titleShadowColor" white="0.5" alpha="1" colorSpace="calibratedWhite"/>
+                                </state>
+                                <connections>
+                                    <action selector="actionSheet:" destination="BYZ-38-t0r" eventType="touchUpInside" id="t0a-Y7-en7"/>
+                                </connections>
+                            </button>
+                            <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="WRy-Qq-dlE">
+                                <rect key="frame" x="222" y="428" width="157" height="57"/>
+                                <color key="backgroundColor" red="0.90588241820000004" green="0.90588241820000004" blue="0.90980398650000005" alpha="1" colorSpace="deviceRGB"/>
+                                <constraints>
+                                    <constraint firstAttribute="height" constant="57" id="Ip2-lt-2Oi"/>
+                                    <constraint firstAttribute="width" constant="157" id="Vqe-xs-U4B"/>
+                                </constraints>
+                                <state key="normal" title="one button">
+                                    <color key="titleShadowColor" white="0.5" alpha="1" colorSpace="calibratedWhite"/>
+                                </state>
+                                <connections>
+                                    <action selector="onebutton:" destination="BYZ-38-t0r" eventType="touchUpInside" id="chZ-Gc-ZNZ"/>
+                                </connections>
+                            </button>
                         </subviews>
                         <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="calibratedWhite"/>
                         <constraints>
+                            <constraint firstAttribute="centerX" secondItem="uoz-58-DNv" secondAttribute="centerX" id="9NC-vp-6pS"/>
                             <constraint firstAttribute="centerX" secondItem="hCM-gw-QxK" secondAttribute="centerX" id="AUx-bj-RWN"/>
+                            <constraint firstItem="Q0I-V8-EqZ" firstAttribute="top" secondItem="hCM-gw-QxK" secondAttribute="bottom" constant="34" id="QB5-pa-Kmc"/>
                             <constraint firstAttribute="centerX" secondItem="hCM-gw-QxK" secondAttribute="centerX" id="QR7-6T-0j6"/>
+                            <constraint firstAttribute="centerX" secondItem="WRy-Qq-dlE" secondAttribute="centerX" id="VDx-y1-ONf"/>
+                            <constraint firstAttribute="centerX" secondItem="Q0I-V8-EqZ" secondAttribute="centerX" id="fLm-FA-mMB"/>
+                            <constraint firstItem="uoz-58-DNv" firstAttribute="top" secondItem="Q0I-V8-EqZ" secondAttribute="bottom" constant="41" id="gNa-Ec-V5u"/>
+                            <constraint firstItem="WRy-Qq-dlE" firstAttribute="top" secondItem="uoz-58-DNv" secondAttribute="bottom" constant="30" id="h8g-jx-UWQ"/>
                             <constraint firstItem="hCM-gw-QxK" firstAttribute="top" secondItem="y3c-jy-aDJ" secondAttribute="bottom" constant="81" id="lrh-Nf-Nlh"/>
                             <constraint firstAttribute="centerY" secondItem="hCM-gw-QxK" secondAttribute="centerY" id="zIU-tD-fJH"/>
                         </constraints>
@@ -48,6 +96,7 @@
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="dkx-z0-nzr" sceneMemberID="firstResponder"/>
             </objects>
+            <point key="canvasLocation" x="380" y="390"/>
         </scene>
     </scenes>
 </document>
