@@ -60,6 +60,8 @@ typedef void(^SelectionHandler) (AlarmAlertButtonItem *item);
 @property (nonatomic, strong) UIColor *buttonTitleColor;
 @property (nonatomic, strong) UIColor *backgroundColor; //content view (Default white)
 @property (nonatomic, assign) CGFloat cornerRadius;
+@property (nonatomic, assign) CGFloat titleFontSize;
+@property (nonatomic, assign) CGFloat messageFontSize;
 @property (nonatomic, assign) UIEdgeInsets popupContentInsets; //Inset of labels, images,buttons
 @property (nonatomic, assign) AlarmAlertStyle popupStyle; //center,action sheet,full screen
 @property (nonatomic, assign) CGFloat contentVerticalPadding; // Spacing between each vertical element

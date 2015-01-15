@@ -2,8 +2,6 @@
 #import "AlarmAlertView.h"
 
 #define isIPad   (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad)
-#define titleFontSize 17
-#define messageFontSize 14
 #define buttonFontSize 16
 
 #pragma mark - AlarmAlertButton
@@ -107,13 +105,13 @@
     [self.maskView addSubview:self.contentView];
     
     if (self.title) {
-        NSAttributedString *aTitle = [AlarmAlertView attributeStringWithTitle:self.title attributes:@{NSFontAttributeName : [UIFont boldSystemFontOfSize:titleFontSize], NSForegroundColorAttributeName : self.theme.titleColor}];
+        NSAttributedString *aTitle = [AlarmAlertView attributeStringWithTitle:self.title attributes:@{NSFontAttributeName : [UIFont boldSystemFontOfSize:self.theme.titleFontSize], NSForegroundColorAttributeName : self.theme.titleColor}];
         UILabel *title = [self multilineLabelWithAttributedString:aTitle];
         [self.contentView addSubview:title];
     }
     
     if (self.message) {
-        NSAttributedString *aMessage = [AlarmAlertView attributeStringWithTitle:self.message attributes:@{NSFontAttributeName : [UIFont systemFontOfSize:messageFontSize], NSForegroundColorAttributeName : self.theme.messageColor}];
+        NSAttributedString *aMessage = [AlarmAlertView attributeStringWithTitle:self.message attributes:@{NSFontAttributeName : [UIFont systemFontOfSize:self.theme.messageFontSize], NSForegroundColorAttributeName : self.theme.messageColor}];
         UILabel *label = [self multilineLabelWithAttributedString:aMessage];
         [self.contentView addSubview:label];
     }
@@ -516,6 +514,8 @@
         UIColor *color = [UIColor colorWithRed:72.0/255 green:80.0/255 blue:81.0/255 alpha:1];
         self.titleColor = self.messageColor = self.buttonTitleColor=color;
         self.cornerRadius = 6.0f;
+        self.titleFontSize = 17.f;
+        self.messageFontSize = 14.f;
         self.popupContentInsets = UIEdgeInsetsMake(17.0f, 15.0f, 17.0f, 15.0f);
         self.popupStyle = AACentered;
         self.contentVerticalPadding = 10.0f;
