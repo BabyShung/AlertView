@@ -21,7 +21,7 @@
 }
 - (IBAction)onebutton:(id)sender {
     AlarmAlertView *al = [[AlarmAlertView alloc] initWithTitle:@"Title" message:@"hello babe"];
-    [al addActionWithTitle:@"Cancel" handler:^(AlarmAlertButtonItem *item) {
+    [al addActionWithTitle:@"Cancel" style:AlertButtonDestructive handler:^(AlarmAlertButtonItem *item) {
         NSLog(@"aaaa");
     }];
     [al show];
@@ -60,4 +60,8 @@
     [al show];
 }
 
+- (IBAction)appleDefault:(id)sender {
+    UIAlertView *al = [[UIAlertView alloc] initWithTitle:@"Title" message:@"Message" delegate:nil cancelButtonTitle:@"Cancel" otherButtonTitles:nil];
+    [al show];
+}
 @end

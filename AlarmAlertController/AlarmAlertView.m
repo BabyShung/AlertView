@@ -2,12 +2,25 @@
 #import "AlarmAlertView.h"
 
 #define isIPad   (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad)
+#define titleFontSize 19
+#define messageFontSize 16
+#define buttonFontSize 17
+#define centeredContentViewSize 290
+#define fontColor [UIColor colorWithRed:72.0/255 green:80.0/255 blue:81.0/255 alpha:1]
+
+#pragma mark - AlarmAlertButton
 
 @interface AlarmAlertButton : UIButton
 
 @property (nonatomic, strong) AlarmAlertButtonItem *item;
 
 @end
+
+@implementation AlarmAlertButton
+
+@end
+
+#pragma mark - AlarmAlertView
 
 @interface AlarmAlertView ()
 
@@ -46,13 +59,13 @@
     self = [super init];
     if (self) {
         _selfReference = self;
-        _aTitle = title? [self attributeStringWithTitle:title attributes:@{NSFontAttributeName : [UIFont boldSystemFontOfSize:20]}] : nil;
-        _aMessage = message? [self attributeStringWithTitle:message attributes:@{NSFontAttributeName : [UIFont systemFontOfSize:16]}] : nil;
+        _aTitle = title? [self attributeStringWithTitle:title attributes:@{NSFontAttributeName : [UIFont boldSystemFontOfSize:titleFontSize], NSForegroundColorAttributeName : fontColor}] : nil;
+        _aMessage = message? [self attributeStringWithTitle:message attributes:@{NSFontAttributeName : [UIFont systemFontOfSize:messageFontSize], NSForegroundColorAttributeName : fontColor}] : nil;
         _theme = [AlarmAlertTheme defaultTheme];
         _theme.popupStyle = style;
         _buttonItems = [NSMutableArray array];
         
-        self.KeyWindow = [self findMainWindow];
+        self.KeyWindow = [[UIApplication sharedApplication] keyWindow];
     }
     return self;
 }
@@ -69,18 +82,14 @@
 
 - (void)addActionWithTitle:(NSString *)title style:(AlertButtonStyle)style handler:(void (^)(AlarmAlertButtonItem *item))handler
 {
-    NSAttributedString *buttonString = [self attributeStringWithTitle:title attributes:@{NSFontAttributeName : [UIFont boldSystemFontOfSize:18], NSForegroundColorAttributeName : [UIColor grayColor]}];
+    NSAttributedString *buttonString = [self attributeStringWithTitle:title attributes:@{NSFontAttributeName : [UIFont boldSystemFontOfSize:buttonFontSize], NSForegroundColorAttributeName : fontColor}];
     
-    //    if (style == AlertButtonStyleDefault) {
-    //
-    //    }
-    
-    AlarmAlertButtonItem *item = [AlarmAlertButtonItem defaultButtonItemWithTitle:buttonString backgroundColor:[UIColor whiteColor]];
+    AlarmAlertButtonItem *item = [AlarmAlertButtonItem defaultButtonItemWithTitle:buttonString andStyle:style];
     item.selectionHandler = handler;
     [self.buttonItems addObject:item];
 }
 
-#pragma mark - Touch Handling
+#pragma mark - UI & Constraints
 
 - (void)initializeViews
 {
@@ -116,6 +125,13 @@
     
     if (self.buttonItems.count >0) {
         for (AlarmAlertButtonItem *item in self.buttonItems){
+            
+            if (self.buttonItems.count > 2) {
+                item.cornerRadius = 3;
+                item.backgroundColor = [UIColor orangeColor];
+                item.buttonHeight = 45;
+            }
+            
             AlarmAlertButton *button = [self buttonItem:item];
             [self.contentView addSubview:button];
         }
@@ -126,20 +142,20 @@
 
 - (void)setupLayoutAndContraints
 {
-    [self addConstraint:NSLayoutAttributeTop fromSubView:self.maskView toSuperView:self.KeyWindow withPadding:0];
-    [self addConstraint:NSLayoutAttributeLeft fromSubView:self.maskView toSuperView:self.KeyWindow withPadding:0];
-    [self addConstraint:NSLayoutAttributeRight fromSubView:self.maskView toSuperView:self.KeyWindow withPadding:0];
-    [self addConstraint:NSLayoutAttributeBottom fromSubView:self.maskView toSuperView:self.KeyWindow withPadding:0];
+    [self addSameDirectionConstraint:NSLayoutAttributeTop fromSubView:self.maskView toSuperView:self.KeyWindow withPadding:0];
+    [self addSameDirectionConstraint:NSLayoutAttributeLeft fromSubView:self.maskView toSuperView:self.KeyWindow withPadding:0];
+    [self addSameDirectionConstraint:NSLayoutAttributeRight fromSubView:self.maskView toSuperView:self.KeyWindow withPadding:0];
+    [self addSameDirectionConstraint:NSLayoutAttributeBottom fromSubView:self.maskView toSuperView:self.KeyWindow withPadding:0];
 
     [self.contentView.subviews enumerateObjectsUsingBlock:^(UIView *view, NSUInteger index, BOOL *stop)
      {
          if (index == 0) {//title label
              //padding to top
-             [self addConstraint:NSLayoutAttributeTop fromSubView:view toSuperView:self.contentView withPadding:self.theme.popupContentInsets.top];
+             [self addSameDirectionConstraint:NSLayoutAttributeTop fromSubView:view toSuperView:self.contentView withPadding:self.theme.popupContentInsets.top];
              
-             //leftRight
-             [self addConstraint:NSLayoutAttributeLeft fromSubView:view toSuperView:self.contentView withPadding:self.theme.popupContentInsets.left];
-             [self addConstraint:NSLayoutAttributeRight fromSubView:view toSuperView:self.contentView withPadding:-self.theme.popupContentInsets.right];
+             //leftRight padding
+             [self addSameDirectionConstraint:NSLayoutAttributeLeft fromSubView:view toSuperView:self.contentView withPadding:self.theme.popupContentInsets.left];
+             [self addSameDirectionConstraint:NSLayoutAttributeRight fromSubView:view toSuperView:self.contentView withPadding:-self.theme.popupContentInsets.right];
          }else {
              UIView *previousSubView = [self.contentView.subviews objectAtIndex:index - 1];
              if (previousSubView) {
@@ -151,55 +167,60 @@
                      
                      if ([self twoButtonsOnly]) {
                          //padding to top
-                         [self.contentView addConstraint:[NSLayoutConstraint constraintWithItem:view attribute:NSLayoutAttributeTop relatedBy:NSLayoutRelationEqual toItem:self.hLine attribute:NSLayoutAttributeBottom multiplier:1.0 constant:0]];
+                         [self addTopBottomConstraintFromTopView:self.hLine toButtomView:view withPadding:0];
                          //leftRight
                          if (button.item == self.buttonItems[0]) {
-                             [self addConstraint:NSLayoutAttributeLeft fromSubView:view toSuperView:self.contentView withPadding:0];
-                             [self addConstraint:NSLayoutAttributeRight fromSubView:view toSuperView:self.vLine withPadding:-1];
+                             [self addSameDirectionConstraint:NSLayoutAttributeLeft fromSubView:view toSuperView:self.contentView withPadding:0];
+                             [self addSameDirectionConstraint:NSLayoutAttributeRight fromSubView:view toSuperView:self.vLine withPadding:-1];
                          }else{
-                             [self addConstraint:NSLayoutAttributeLeft fromSubView:view toSuperView:self.vLine withPadding:1];
-                             [self addConstraint:NSLayoutAttributeRight fromSubView:view toSuperView:self.contentView withPadding:0];
+                             [self addSameDirectionConstraint:NSLayoutAttributeLeft fromSubView:view toSuperView:self.vLine withPadding:1];
+                             [self addSameDirectionConstraint:NSLayoutAttributeRight fromSubView:view toSuperView:self.contentView withPadding:0];
                          }
                      }else if (self.buttonItems.count == 1){
                          //padding to top
-                         [self.contentView addConstraint:[NSLayoutConstraint constraintWithItem:view attribute:NSLayoutAttributeTop relatedBy:NSLayoutRelationEqual toItem:self.hLine attribute:NSLayoutAttributeBottom multiplier:1.0 constant:0]];
+                         [self addTopBottomConstraintFromTopView:self.hLine toButtomView:view withPadding:0];
+                         //leftRight padding
+                         [self addSameDirectionConstraint:NSLayoutAttributeLeft fromSubView:view toSuperView:self.contentView withPadding:0];
+                         [self addSameDirectionConstraint:NSLayoutAttributeRight fromSubView:view toSuperView:self.contentView withPadding:0];
+                     }else if (self.buttonItems.count > 2){
+                         //padding to top
+                         [self addTopBottomConstraintFromTopView:previousSubView toButtomView:view withPadding:self.theme.contentVerticalPadding + 3];
                          //leftRight
-                         [self addConstraint:NSLayoutAttributeLeft fromSubView:view toSuperView:self.contentView withPadding:0];
-                         [self addConstraint:NSLayoutAttributeRight fromSubView:view toSuperView:self.contentView withPadding:0];
+                         [self addSameDirectionConstraint:NSLayoutAttributeLeft fromSubView:view toSuperView:self.contentView withPadding:self.theme.popupContentInsets.left];
+                         [self addSameDirectionConstraint:NSLayoutAttributeRight fromSubView:view toSuperView:self.contentView withPadding:-self.theme.popupContentInsets.right];
                      }
                  }
                  else if ([view isKindOfClass:[UILabel class]]) {
                      //padding to top
-                     [self.contentView addConstraint:[NSLayoutConstraint constraintWithItem:view attribute:NSLayoutAttributeTop relatedBy:NSLayoutRelationEqual toItem:previousSubView attribute:NSLayoutAttributeBottom multiplier:1.0 constant:self.theme.contentVerticalPadding]];
-                     //leftRight
-                     [self addConstraint:NSLayoutAttributeLeft fromSubView:view toSuperView:self.contentView withPadding:self.theme.popupContentInsets.left];
-                     [self addConstraint:NSLayoutAttributeRight fromSubView:view toSuperView:self.contentView withPadding:-self.theme.popupContentInsets.right];
+                     [self addTopBottomConstraintFromTopView:previousSubView toButtomView:view withPadding:self.theme.contentVerticalPadding];
+                     //leftRight padding
+                     [self addSameDirectionConstraint:NSLayoutAttributeLeft fromSubView:view toSuperView:self.contentView withPadding:self.theme.popupContentInsets.left];
+                     [self addSameDirectionConstraint:NSLayoutAttributeRight fromSubView:view toSuperView:self.contentView withPadding:-self.theme.popupContentInsets.right];
                  }
                  else if (view == self.hLine) {
                      //padding to top
-                     [self.contentView addConstraint:[NSLayoutConstraint constraintWithItem:view attribute:NSLayoutAttributeTop relatedBy:NSLayoutRelationEqual toItem:previousSubView attribute:NSLayoutAttributeBottom multiplier:1.0 constant:self.theme.contentVerticalPadding]];
+                     [self addTopBottomConstraintFromTopView:previousSubView toButtomView:view withPadding:self.theme.contentVerticalPadding + 5];
                      //height
                      [self addWidthHeightContraint:NSLayoutAttributeHeight forView:view constant:0.5];
-                     
-                     //leftRight
-                     [self addConstraint:NSLayoutAttributeLeft fromSubView:view toSuperView:self.contentView withPadding:0];
-                     [self addConstraint:NSLayoutAttributeRight fromSubView:view toSuperView:self.contentView withPadding:0];
+                     //leftRight padding
+                     [self addSameDirectionConstraint:NSLayoutAttributeLeft fromSubView:view toSuperView:self.contentView withPadding:0];
+                     [self addSameDirectionConstraint:NSLayoutAttributeRight fromSubView:view toSuperView:self.contentView withPadding:0];
                  }
                  else if (view == self.vLine) {
                      //padding to top
-                     [self.contentView addConstraint:[NSLayoutConstraint constraintWithItem:view attribute:NSLayoutAttributeTop relatedBy:NSLayoutRelationEqual toItem:self.hLine attribute:NSLayoutAttributeBottom multiplier:1.0 constant:0]];
+                     [self addTopBottomConstraintFromTopView:self.hLine toButtomView:view withPadding:0];
                      //centerX
                      [self.contentView addConstraint:[NSLayoutConstraint constraintWithItem:view attribute:NSLayoutAttributeCenterX relatedBy:NSLayoutRelationEqual toItem:self.contentView attribute:NSLayoutAttributeCenterX multiplier:1.0 constant:0]];
                      //width
                      [self addWidthHeightContraint:NSLayoutAttributeWidth forView:view constant:0.5];
                      //to contentView bottom
-                     [self addConstraint:NSLayoutAttributeBottom fromSubView:view toSuperView:self.contentView withPadding:0];
+                     [self addSameDirectionConstraint:NSLayoutAttributeBottom fromSubView:view toSuperView:self.contentView withPadding:0];
                  }
              }
          }
          
          if (index == self.contentView.subviews.count - 1) {//buttom padding
-             [self addConstraint:NSLayoutAttributeBottom fromSubView:view toSuperView:self.contentView withPadding:(self.buttonItems.count <= 2)?0:-(self.theme.popupContentInsets.bottom + 0.0f)];
+             [self addSameDirectionConstraint:NSLayoutAttributeBottom fromSubView:view toSuperView:self.contentView withPadding:(self.buttonItems.count <= 2)?0:-(self.theme.popupContentInsets.bottom + 0.0f)];
          }
          
          [view setContentHuggingPriority:UILayoutPriorityDefaultHigh forAxis:UILayoutConstraintAxisVertical];
@@ -221,18 +242,18 @@
         [self.maskView addConstraint:self.contentViewCenterXConstraint];
     }
     else if (self.theme.popupStyle == AAActionSheet) {
-        self.contentViewHeight = [NSLayoutConstraint constraintWithItem:self.contentView attribute:NSLayoutAttributeWidth relatedBy:NSLayoutRelationEqual toItem:self.maskView attribute:NSLayoutAttributeWidth multiplier:isIPad?0.5:1.0 constant:0];
+        self.contentViewHeight = [NSLayoutConstraint constraintWithItem:self.contentView attribute:NSLayoutAttributeWidth relatedBy:NSLayoutRelationEqual toItem:self.maskView attribute:NSLayoutAttributeWidth multiplier:isIPad?0.6:1.0 constant:0];
         [self.maskView addConstraint:self.contentViewHeight];
         self.contentViewBottom = [NSLayoutConstraint constraintWithItem:self.contentView attribute:NSLayoutAttributeBottom relatedBy:NSLayoutRelationEqual toItem:self.maskView attribute:NSLayoutAttributeBottom multiplier:1.0 constant:0];
         [self.maskView addConstraint:self.contentViewBottom];
         self.contentViewCenterXConstraint = [NSLayoutConstraint constraintWithItem:self.contentView attribute:NSLayoutAttributeCenterX relatedBy:NSLayoutRelationEqual toItem:self.maskView attribute:NSLayoutAttributeCenterX multiplier:1.0 constant:0];
         [self.maskView addConstraint:self.contentViewCenterXConstraint];
     }
-    else {//centered
+    else {//centered style
         if (isIPad) {
             self.contentViewWidth = [NSLayoutConstraint constraintWithItem:self.contentView attribute:NSLayoutAttributeWidth relatedBy:NSLayoutRelationEqual toItem:self.maskView attribute:NSLayoutAttributeWidth multiplier:0.4 constant:0];
         }else {
-            self.contentViewWidth = [NSLayoutConstraint constraintWithItem:self.contentView attribute:NSLayoutAttributeWidth relatedBy:NSLayoutRelationEqual toItem:self.maskView attribute:NSLayoutAttributeWidth multiplier:0 constant:290];
+            self.contentViewWidth = [NSLayoutConstraint constraintWithItem:self.contentView attribute:NSLayoutAttributeWidth relatedBy:NSLayoutRelationEqual toItem:self.maskView attribute:NSLayoutAttributeWidth multiplier:0 constant:centeredContentViewSize];
         }
         [self.maskView addConstraint:self.contentViewWidth];
         self.contentViewCenterYConstraint = [NSLayoutConstraint constraintWithItem:self.contentView attribute:NSLayoutAttributeCenterY relatedBy:NSLayoutRelationEqual toItem:self.maskView attribute:NSLayoutAttributeCenterY multiplier:1.0 constant:0];
@@ -240,19 +261,6 @@
         self.contentViewCenterXConstraint = [NSLayoutConstraint constraintWithItem:self.contentView attribute:NSLayoutAttributeCenterX relatedBy:NSLayoutRelationEqual toItem:self.maskView attribute:NSLayoutAttributeCenterX multiplier:1.0 constant:0];
         [self.maskView addConstraint:self.contentViewCenterXConstraint];
     }
-}
-
-- (BOOL)twoButtonsOnly
-{
-    return self.buttonItems.count == 2? YES : NO;
-}
-
-- (void)actionButtonPressed:(AlarmAlertButton *)sender
-{
-    if (sender.item.selectionHandler) {
-        sender.item.selectionHandler(sender.item);
-    }
-    [self dismissViewAnimated:YES withButtonTitle:[sender attributedTitleForState:UIControlStateNormal].string];
 }
 
 #pragma mark - Presentation
@@ -340,6 +348,19 @@
 
 #pragma mark - Helpers
 
+- (BOOL)twoButtonsOnly
+{
+    return self.buttonItems.count == 2? YES : NO;
+}
+
+- (void)actionButtonPressed:(AlarmAlertButton *)sender
+{
+    if (sender.item.selectionHandler) {
+        sender.item.selectionHandler(sender.item);
+    }
+    [self dismissViewAnimated:YES withButtonTitle:[sender attributedTitleForState:UIControlStateNormal].string];
+}
+
 - (UILabel *)multilineLabelWithAttributedString:(NSAttributedString *)attributedString
 {
     UILabel *label = [[UILabel alloc] init];
@@ -368,17 +389,6 @@
     [button.layer setBorderWidth:item.borderWidth];
     button.item = item;
     return button;
-}
-
-- (UIWindow *)findMainWindow
-{
-    NSEnumerator *frontToBackWindows = [[[UIApplication sharedApplication] windows] reverseObjectEnumerator];
-    for (UIWindow *window in frontToBackWindows) {
-        if (window.windowLevel == UIWindowLevelNormal) {
-            return window;
-        }
-    }
-    return nil;
 }
 
 - (NSAttributedString *)attributeStringWithTitle:(NSString *)title attributes:(NSDictionary *)dict
@@ -417,7 +427,7 @@
     return view;
 }
 
-- (NSLayoutConstraint *)addConstraint:(NSLayoutAttribute)attribute fromSubView:(UIView*)view toSuperView:(UIView*)superView withPadding:(CGFloat)padding
+- (NSLayoutConstraint *)addSameDirectionConstraint:(NSLayoutAttribute)attribute fromSubView:(UIView*)view toSuperView:(UIView*)superView withPadding:(CGFloat)padding
 {
     NSLayoutConstraint *constraint = [NSLayoutConstraint constraintWithItem:view
                                                                   attribute:attribute
@@ -427,6 +437,19 @@
                                                                  multiplier:1
                                                                    constant:padding];
     [view.superview addConstraint:constraint];
+    return constraint;
+}
+
+- (NSLayoutConstraint *)addTopBottomConstraintFromTopView:(UIView*)topView toButtomView:(UIView*)buttomView withPadding:(CGFloat)padding
+{
+    NSLayoutConstraint *constraint = [NSLayoutConstraint constraintWithItem:buttomView
+                                                                  attribute:NSLayoutAttributeTop
+                                                                  relatedBy:NSLayoutRelationEqual
+                                                                     toItem:topView
+                                                                  attribute:NSLayoutAttributeBottom
+                                                                 multiplier:1
+                                                                   constant:padding];
+    [topView.superview addConstraint:constraint];
     return constraint;
 }
 
@@ -442,23 +465,31 @@
 
 @end
 
-#pragma mark - AlarmAlertButton Methods
-
-@implementation AlarmAlertButton
-
-@end
-
-#pragma mark - AlarmAlertButtonItem Methods
+#pragma mark - AlarmAlertButtonItem
 
 @implementation AlarmAlertButtonItem
 
-+ (AlarmAlertButtonItem *)defaultButtonItemWithTitle:(NSAttributedString *)title backgroundColor:(UIColor *)color
++ (AlarmAlertButtonItem *)defaultButtonItemWithTitle:(NSAttributedString *)title andStyle:(AlertButtonStyle)style
 {
     AlarmAlertButtonItem *item = [[AlarmAlertButtonItem alloc] init];
     item.buttonTitle = title;
+    item.buttonStyle = style;
     item.cornerRadius = 0;
-    item.backgroundColor = color;
+    item.backgroundColor = [UIColor whiteColor];
     item.buttonHeight = 50;
+    switch (style) {
+        case AlertButtonStyleDefault:
+            
+            break;
+        case AlertButtonCancel:
+            
+            break;
+        case AlertButtonDestructive:
+            item.backgroundColor = [UIColor redColor];
+            break;
+        default:
+            break;
+    }
     return item;
 }
 
@@ -473,7 +504,7 @@
     defaultTheme.cornerRadius = 6.0f;
     defaultTheme.popupContentInsets = UIEdgeInsetsMake(16.0f, 16.0f, 16.0f, 16.0f);
     defaultTheme.popupStyle = AACentered;
-    defaultTheme.contentVerticalPadding = 12.0f;
+    defaultTheme.contentVerticalPadding = 10.0f;
     return defaultTheme;
 }
 

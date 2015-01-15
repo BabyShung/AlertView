@@ -72,9 +72,25 @@
                                     <action selector="onebutton:" destination="BYZ-38-t0r" eventType="touchUpInside" id="chZ-Gc-ZNZ"/>
                                 </connections>
                             </button>
+                            <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="aYi-GK-aWk">
+                                <rect key="frame" x="226" y="503" width="148" height="47"/>
+                                <color key="backgroundColor" red="0.078431372550000003" green="0.72549019609999998" blue="0.87843137250000003" alpha="1" colorSpace="deviceRGB"/>
+                                <constraints>
+                                    <constraint firstAttribute="width" constant="148" id="Cni-qd-elO"/>
+                                    <constraint firstAttribute="height" constant="47" id="fhN-Oa-eu4"/>
+                                </constraints>
+                                <state key="normal" title="Default Apple">
+                                    <color key="titleColor" red="0.2823529541" green="0.31372550129999999" blue="0.31764706970000001" alpha="1" colorSpace="deviceRGB"/>
+                                    <color key="titleShadowColor" white="0.5" alpha="1" colorSpace="calibratedWhite"/>
+                                </state>
+                                <connections>
+                                    <action selector="appleDefault:" destination="BYZ-38-t0r" eventType="touchUpInside" id="YuT-61-5XN"/>
+                                </connections>
+                            </button>
                         </subviews>
                         <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="calibratedWhite"/>
                         <constraints>
+                            <constraint firstAttribute="centerX" secondItem="aYi-GK-aWk" secondAttribute="centerX" id="0RN-ox-mpx"/>
                             <constraint firstAttribute="centerX" secondItem="uoz-58-DNv" secondAttribute="centerX" id="9NC-vp-6pS"/>
                             <constraint firstAttribute="centerX" secondItem="hCM-gw-QxK" secondAttribute="centerX" id="AUx-bj-RWN"/>
                             <constraint firstItem="Q0I-V8-EqZ" firstAttribute="top" secondItem="hCM-gw-QxK" secondAttribute="bottom" constant="34" id="QB5-pa-Kmc"/>
@@ -84,6 +100,7 @@
                             <constraint firstItem="uoz-58-DNv" firstAttribute="top" secondItem="Q0I-V8-EqZ" secondAttribute="bottom" constant="41" id="gNa-Ec-V5u"/>
                             <constraint firstItem="WRy-Qq-dlE" firstAttribute="top" secondItem="uoz-58-DNv" secondAttribute="bottom" constant="30" id="h8g-jx-UWQ"/>
                             <constraint firstItem="hCM-gw-QxK" firstAttribute="top" secondItem="y3c-jy-aDJ" secondAttribute="bottom" constant="81" id="lrh-Nf-Nlh"/>
+                            <constraint firstItem="aYi-GK-aWk" firstAttribute="top" secondItem="WRy-Qq-dlE" secondAttribute="bottom" constant="18" id="y5J-Ge-L1W"/>
                             <constraint firstAttribute="centerY" secondItem="hCM-gw-QxK" secondAttribute="centerY" id="zIU-tD-fJH"/>
                         </constraints>
                         <variation key="default">

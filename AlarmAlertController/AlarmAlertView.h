@@ -45,8 +45,9 @@ typedef void(^SelectionHandler) (AlarmAlertButtonItem *item);
 @property (nonatomic, assign) CGFloat cornerRadius;
 @property (nonatomic, assign) CGFloat buttonHeight;
 @property (nonatomic, strong) SelectionHandler selectionHandler;
+@property (nonatomic) AlertButtonStyle buttonStyle;
 
-+ (AlarmAlertButtonItem *)defaultButtonItemWithTitle:(NSAttributedString *)title backgroundColor:(UIColor *)color;
++ (AlarmAlertButtonItem *)defaultButtonItemWithTitle:(NSAttributedString *)title andStyle:(AlertButtonStyle)style;
 
 @end
 
