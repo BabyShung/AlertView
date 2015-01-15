@@ -346,19 +346,19 @@
     }
 }
 
-#pragma mark - Helpers
-
-- (BOOL)twoButtonsOnly
-{
-    return self.buttonItems.count == 2? YES : NO;
-}
-
 - (void)actionButtonPressed:(AlarmAlertButton *)sender
 {
     if (sender.item.selectionHandler) {
         sender.item.selectionHandler(sender.item);
     }
     [self dismissViewAnimated:YES withButtonTitle:[sender attributedTitleForState:UIControlStateNormal].string];
+}
+
+#pragma mark - Helpers
+
+- (BOOL)twoButtonsOnly
+{
+    return self.buttonItems.count == 2? YES : NO;
 }
 
 - (UILabel *)multilineLabelWithAttributedString:(NSAttributedString *)attributedString
