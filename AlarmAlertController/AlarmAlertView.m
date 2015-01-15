@@ -3,8 +3,8 @@
 
 #define isIPad   (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad)
 #define titleFontSize 17
-#define messageFontSize 15
-#define buttonFontSize 17
+#define messageFontSize 14
+#define buttonFontSize 16
 
 #pragma mark - AlarmAlertButton
 
@@ -472,7 +472,7 @@
         self.buttonStyle = style;
         self.cornerRadius = 0;
         self.backgroundColor = [UIColor whiteColor];
-        self.buttonHeight = 50;
+        self.buttonHeight = 48;
         UIColor *buttonTitleColor = color;
         switch (style) {
             case AlertButtonStyleDefault:
@@ -516,7 +516,7 @@
         UIColor *color = [UIColor colorWithRed:72.0/255 green:80.0/255 blue:81.0/255 alpha:1];
         self.titleColor = self.messageColor = self.buttonTitleColor=color;
         self.cornerRadius = 6.0f;
-        self.popupContentInsets = UIEdgeInsetsMake(18.0f, 16.0f, 18.0f, 16.0f);
+        self.popupContentInsets = UIEdgeInsetsMake(17.0f, 15.0f, 17.0f, 15.0f);
         self.popupStyle = AACentered;
         self.contentVerticalPadding = 10.0f;
     }

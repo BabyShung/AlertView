@@ -28,6 +28,7 @@ typedef NS_ENUM(NSUInteger, AlarmAlertStyle) {
 - (void)addActionWithTitle:(NSString *)title;
 - (void)addActionWithTitle:(NSString *)title handler:(void (^)(AlarmAlertButtonItem *item))handler;
 - (void)addActionWithTitle:(NSString *)title style:(AlertButtonStyle)style handler:(void (^)(AlarmAlertButtonItem *item))handler;
+- (void)addActionWithTitle:(NSString *)title titleColor:(UIColor *)color style:(AlertButtonStyle)style handler:(void (^)(AlarmAlertButtonItem *item))handler;
 
 - (void)show;
 - (void)dismiss;
