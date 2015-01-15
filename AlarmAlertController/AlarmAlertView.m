@@ -377,12 +377,29 @@
     AlarmAlertButton *button = [[AlarmAlertButton alloc] init];
     [button setTranslatesAutoresizingMaskIntoConstraints:NO];
     [button setAttributedTitle:item.buttonTitle forState:UIControlStateNormal];
+    NSAttributedString *alphaString = [self attributedStringChangeColorAlpha:item.buttonTitle];
+    [button setAttributedTitle:alphaString forState:UIControlStateHighlighted];
     [button setBackgroundColor:item.backgroundColor];
     [button.layer setCornerRadius:item.cornerRadius];
     [button.layer setBorderColor:item.borderColor.CGColor];
     [button.layer setBorderWidth:item.borderWidth];
     button.item = item;
     return button;
+}
+
+- (NSAttributedString*) attributedStringChangeColorAlpha:(NSAttributedString *)string
+{
+    NSMutableAttributedString* attributedString = [string mutableCopy];
+    {
+        [attributedString beginEditing];
+        [attributedString enumerateAttribute:NSForegroundColorAttributeName inRange:NSMakeRange(0, attributedString.length) options:0 usingBlock:^(id value, NSRange range, BOOL *stop) {
+            UIColor* alphaColor = value;
+            UIColor *final = [alphaColor colorWithAlphaComponent:0.7];
+            [attributedString removeAttribute:NSForegroundColorAttributeName range:range];
+            [attributedString addAttribute:NSForegroundColorAttributeName value:final range:range];
+        }];        [attributedString endEditing];
+    }
+    return [attributedString copy];
 }
 
 + (NSAttributedString *)attributeStringWithTitle:(NSString *)title attributes:(NSDictionary *)dict
