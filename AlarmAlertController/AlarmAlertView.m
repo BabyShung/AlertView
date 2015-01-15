@@ -494,7 +494,7 @@
                 //do nothing
                 break;
             case AlertButtonCancel:
-                buttonTitleColor = [UIColor colorWithRed:72.0/255 green:80.0/255 blue:81.0/255 alpha:1];
+                buttonTitleColor = [UIColor colorWithRed:85.0/255 green:85.0/255 blue:85.0/255 alpha:1];
                 break;
             case AlertButtonDestructive:
                 self.backgroundColor = [UIColor redColor];
@@ -528,7 +528,7 @@
     self = [super init];
     if (self) {
         self.backgroundColor = [UIColor whiteColor];
-        UIColor *color = [UIColor colorWithRed:72.0/255 green:80.0/255 blue:81.0/255 alpha:1];
+        UIColor *color = [UIColor colorWithRed:85.0/255 green:85.0/255 blue:85.0/255 alpha:1];
         self.titleColor = self.messageColor = self.buttonTitleColor=color;
         self.cornerRadius = 6.0f;
         self.titleFontSize = 17.f;
