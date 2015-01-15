@@ -20,7 +20,13 @@
     
 }
 - (IBAction)onebutton:(id)sender {
-    AlarmAlertView *al = [[AlarmAlertView alloc] initWithTitle:@"Title" message:@"hello babe"];
+//    AlarmAlertView *al = [[AlarmAlertView alloc] initWithTitle:@"Are you sure you want to log out?" message:@"Mesg"];
+//    [al addActionWithTitle:@"Cancel" style:AlertButtonDestructive handler:^(AlarmAlertButtonItem *item) {
+//        NSLog(@"aaaa");
+//    }];
+//    [al show];
+
+    AlarmAlertView *al = [[AlarmAlertView alloc] initWithTitle:@"aa" message:@"bb"];
     [al addActionWithTitle:@"Cancel" style:AlertButtonDestructive handler:^(AlarmAlertButtonItem *item) {
         NSLog(@"aaaa");
     }];
@@ -28,7 +34,7 @@
 }
 
 - (IBAction)click:(id)sender {
-    AlarmAlertView *al = [[AlarmAlertView alloc] initWithTitle:@"Title" message:@"hello babe"];
+    AlarmAlertView *al = [[AlarmAlertView alloc] initWithTitle:@"Are you sure you want to log out?" message:nil];
     [al addActionWithTitle:@"Cancel" handler:^(AlarmAlertButtonItem *item) {
         NSLog(@"aaaa");
     }];

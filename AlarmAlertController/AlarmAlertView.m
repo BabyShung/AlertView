@@ -2,11 +2,9 @@
 #import "AlarmAlertView.h"
 
 #define isIPad   (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad)
-#define titleFontSize 19
-#define messageFontSize 16
+#define titleFontSize 17
+#define messageFontSize 15
 #define buttonFontSize 17
-#define centeredContentViewSize 290
-#define fontColor [UIColor colorWithRed:72.0/255 green:80.0/255 blue:81.0/255 alpha:1]
 
 #pragma mark - AlarmAlertButton
 
@@ -24,8 +22,8 @@
 
 @interface AlarmAlertView ()
 
-@property (nonatomic, strong) NSAttributedString *aTitle;
-@property (nonatomic, strong) NSAttributedString *aMessage;
+@property (nonatomic, strong) NSString *title;
+@property (nonatomic, strong) NSString *message;
 @property (nonatomic, strong) NSMutableArray *buttonItems;
 
 @property (nonatomic, strong) AlarmAlertView *selfReference;
@@ -58,13 +56,12 @@
 {
     self = [super init];
     if (self) {
-        _selfReference = self;
-        _aTitle = title? [self attributeStringWithTitle:title attributes:@{NSFontAttributeName : [UIFont boldSystemFontOfSize:titleFontSize], NSForegroundColorAttributeName : fontColor}] : nil;
-        _aMessage = message? [self attributeStringWithTitle:message attributes:@{NSFontAttributeName : [UIFont systemFontOfSize:messageFontSize], NSForegroundColorAttributeName : fontColor}] : nil;
-        _theme = [AlarmAlertTheme defaultTheme];
+        _theme = [[AlarmAlertTheme alloc] initWithDefaultTheme];//init theme first
+        _selfReference = self;//it will be removed when dismissed
+        _title = title;
+        _message = message;
         _theme.popupStyle = style;
         _buttonItems = [NSMutableArray array];
-        
         self.KeyWindow = [[UIApplication sharedApplication] keyWindow];
     }
     return self;
@@ -82,9 +79,12 @@
 
 - (void)addActionWithTitle:(NSString *)title style:(AlertButtonStyle)style handler:(void (^)(AlarmAlertButtonItem *item))handler
 {
-    NSAttributedString *buttonString = [self attributeStringWithTitle:title attributes:@{NSFontAttributeName : [UIFont boldSystemFontOfSize:buttonFontSize], NSForegroundColorAttributeName : fontColor}];
-    
-    AlarmAlertButtonItem *item = [AlarmAlertButtonItem defaultButtonItemWithTitle:buttonString andStyle:style];
+    [self addActionWithTitle:title titleColor:self.theme.buttonTitleColor style:style handler:handler];
+}
+
+- (void)addActionWithTitle:(NSString *)title titleColor:(UIColor *)color style:(AlertButtonStyle)style handler:(void (^)(AlarmAlertButtonItem *item))handler
+{
+    AlarmAlertButtonItem *item = [[AlarmAlertButtonItem alloc] initWithTitle:title andButtonTitleColor:color andStyle:style];
     item.selectionHandler = handler;
     [self.buttonItems addObject:item];
 }
@@ -106,18 +106,21 @@
     self.contentView.layer.cornerRadius = self.theme.popupStyle == AACentered ? self.theme.cornerRadius : 0.0f;
     [self.maskView addSubview:self.contentView];
     
-    if (self.aTitle) {
-        UILabel *title = [self multilineLabelWithAttributedString:self.aTitle];
+    if (self.title) {
+        NSAttributedString *aTitle = [AlarmAlertView attributeStringWithTitle:self.title attributes:@{NSFontAttributeName : [UIFont boldSystemFontOfSize:titleFontSize], NSForegroundColorAttributeName : self.theme.titleColor}];
+        UILabel *title = [self multilineLabelWithAttributedString:aTitle];
         [self.contentView addSubview:title];
     }
     
-    if (self.aMessage) {
-        UILabel *label = [self multilineLabelWithAttributedString:self.aMessage];
+    if (self.message) {
+        NSAttributedString *aMessage = [AlarmAlertView attributeStringWithTitle:self.message attributes:@{NSFontAttributeName : [UIFont systemFontOfSize:messageFontSize], NSForegroundColorAttributeName : self.theme.messageColor}];
+        UILabel *label = [self multilineLabelWithAttributedString:aMessage];
         [self.contentView addSubview:label];
     }
     
-    self.hLine = [self getLineView];
+    self.hLine = [self getLineView];//a horizontal line is already needed
     [self.contentView addSubview:self.hLine];
+    
     if ([self twoButtonsOnly]) {
         self.vLine = [self getLineView];
         [self.contentView addSubview:self.vLine];
@@ -125,18 +128,15 @@
     
     if (self.buttonItems.count >0) {
         for (AlarmAlertButtonItem *item in self.buttonItems){
-            
             if (self.buttonItems.count > 2) {
-                item.cornerRadius = 3;
-                item.backgroundColor = [UIColor orangeColor];
-                item.buttonHeight = 45;
+                [item changeToSolidStyle];
             }
-            
             AlarmAlertButton *button = [self buttonItem:item];
             [self.contentView addSubview:button];
         }
     }
     
+    //after initing and adding, setup the contraints
     [self setupLayoutAndContraints];
 }
 
@@ -146,19 +146,21 @@
     [self addSameDirectionConstraint:NSLayoutAttributeLeft fromSubView:self.maskView toSuperView:self.KeyWindow withPadding:0];
     [self addSameDirectionConstraint:NSLayoutAttributeRight fromSubView:self.maskView toSuperView:self.KeyWindow withPadding:0];
     [self addSameDirectionConstraint:NSLayoutAttributeBottom fromSubView:self.maskView toSuperView:self.KeyWindow withPadding:0];
-
+    
     [self.contentView.subviews enumerateObjectsUsingBlock:^(UIView *view, NSUInteger index, BOOL *stop)
      {
-         if (index == 0) {//title label
-             //padding to top
+         if (index == 0) {
+             //padding to the top of contentView
              [self addSameDirectionConstraint:NSLayoutAttributeTop fromSubView:view toSuperView:self.contentView withPadding:self.theme.popupContentInsets.top];
-             
              //leftRight padding
              [self addSameDirectionConstraint:NSLayoutAttributeLeft fromSubView:view toSuperView:self.contentView withPadding:self.theme.popupContentInsets.left];
              [self addSameDirectionConstraint:NSLayoutAttributeRight fromSubView:view toSuperView:self.contentView withPadding:-self.theme.popupContentInsets.right];
          }else {
              UIView *previousSubView = [self.contentView.subviews objectAtIndex:index - 1];
              if (previousSubView) {
+                 
+                 //**** several cases: is Button or Label or HLine or VLine ****
+                 
                  if ([view isKindOfClass:[UIButton class]]) {//is a button, set height constraint
                      AlarmAlertButton *button = (AlarmAlertButton *)view;
                      //height
@@ -253,7 +255,7 @@
         if (isIPad) {
             self.contentViewWidth = [NSLayoutConstraint constraintWithItem:self.contentView attribute:NSLayoutAttributeWidth relatedBy:NSLayoutRelationEqual toItem:self.maskView attribute:NSLayoutAttributeWidth multiplier:0.4 constant:0];
         }else {
-            self.contentViewWidth = [NSLayoutConstraint constraintWithItem:self.contentView attribute:NSLayoutAttributeWidth relatedBy:NSLayoutRelationEqual toItem:self.maskView attribute:NSLayoutAttributeWidth multiplier:0 constant:centeredContentViewSize];
+            self.contentViewWidth = [NSLayoutConstraint constraintWithItem:self.contentView attribute:NSLayoutAttributeWidth relatedBy:NSLayoutRelationEqual toItem:self.maskView attribute:NSLayoutAttributeWidth multiplier:0.85 constant:0];
         }
         [self.maskView addConstraint:self.contentViewWidth];
         self.contentViewCenterYConstraint = [NSLayoutConstraint constraintWithItem:self.contentView attribute:NSLayoutAttributeCenterY relatedBy:NSLayoutRelationEqual toItem:self.maskView attribute:NSLayoutAttributeCenterY multiplier:1.0 constant:0];
@@ -290,8 +292,7 @@
                          [self.maskView needsUpdateConstraints];
                          [self.maskView layoutIfNeeded];
                      }
-                     completion:^(BOOL finished) {
-                     }];
+                     completion:nil];
 }
 
 - (void)dismiss
@@ -300,11 +301,6 @@
 }
 
 - (void)dismissViewAnimated:(BOOL)flag
-{
-    [self dismissViewAnimated:flag withButtonTitle:nil];
-}
-
-- (void)dismissViewAnimated:(BOOL)flag withButtonTitle:(NSString *)title
 {
     [self setOriginConstraints];
     
@@ -351,7 +347,7 @@
     if (sender.item.selectionHandler) {
         sender.item.selectionHandler(sender.item);
     }
-    [self dismissViewAnimated:YES withButtonTitle:[sender attributedTitleForState:UIControlStateNormal].string];
+    [self dismissViewAnimated:YES];
 }
 
 #pragma mark - Helpers
@@ -391,7 +387,7 @@
     return button;
 }
 
-- (NSAttributedString *)attributeStringWithTitle:(NSString *)title attributes:(NSDictionary *)dict
++ (NSAttributedString *)attributeStringWithTitle:(NSString *)title attributes:(NSDictionary *)dict
 {
     NSMutableParagraphStyle *paragraphStyle = NSMutableParagraphStyle.new;
     paragraphStyle.lineBreakMode = NSLineBreakByWordWrapping;
@@ -469,43 +465,62 @@
 
 @implementation AlarmAlertButtonItem
 
-+ (AlarmAlertButtonItem *)defaultButtonItemWithTitle:(NSAttributedString *)title andStyle:(AlertButtonStyle)style
+- (instancetype)initWithTitle:(NSString *)title andButtonTitleColor:(UIColor *)color andStyle:(AlertButtonStyle)style
 {
-    AlarmAlertButtonItem *item = [[AlarmAlertButtonItem alloc] init];
-    item.buttonTitle = title;
-    item.buttonStyle = style;
-    item.cornerRadius = 0;
-    item.backgroundColor = [UIColor whiteColor];
-    item.buttonHeight = 50;
-    switch (style) {
-        case AlertButtonStyleDefault:
-            
-            break;
-        case AlertButtonCancel:
-            
-            break;
-        case AlertButtonDestructive:
-            item.backgroundColor = [UIColor redColor];
-            break;
-        default:
-            break;
+    self = [super init];
+    if (self) {
+        self.buttonStyle = style;
+        self.cornerRadius = 0;
+        self.backgroundColor = [UIColor whiteColor];
+        self.buttonHeight = 50;
+        UIColor *buttonTitleColor = color;
+        switch (style) {
+            case AlertButtonStyleDefault:
+                //do nothing
+                break;
+            case AlertButtonCancel:
+                buttonTitleColor = [UIColor colorWithRed:72.0/255 green:80.0/255 blue:81.0/255 alpha:1];
+                break;
+            case AlertButtonDestructive:
+                self.backgroundColor = [UIColor redColor];
+                break;
+            default:
+                break;
+        }
+        NSAttributedString *buttonString = [AlarmAlertView attributeStringWithTitle:title attributes:@{NSFontAttributeName : [UIFont boldSystemFontOfSize:buttonFontSize], NSForegroundColorAttributeName : buttonTitleColor}];
+        self.buttonTitle = buttonString;
     }
-    return item;
+    return self;
+}
+
+- (void)changeToSolidStyle
+{
+    self.cornerRadius = 3;
+    self.backgroundColor = [UIColor orangeColor];
+    self.buttonHeight = 45;
+    NSAttributedString *buttonString = [AlarmAlertView attributeStringWithTitle:self.buttonTitle.string attributes:@{NSFontAttributeName : [UIFont boldSystemFontOfSize:buttonFontSize], NSForegroundColorAttributeName : [UIColor whiteColor]}];
+    self.buttonTitle = buttonString;
 }
 
 @end
 
+#pragma mark - AlarmAlertTheme
+
 @implementation AlarmAlertTheme
 
-+ (AlarmAlertTheme *)defaultTheme
+- (instancetype)initWithDefaultTheme
 {
-    AlarmAlertTheme *defaultTheme = [[AlarmAlertTheme alloc] init];
-    defaultTheme.backgroundColor = [UIColor whiteColor];
-    defaultTheme.cornerRadius = 6.0f;
-    defaultTheme.popupContentInsets = UIEdgeInsetsMake(16.0f, 16.0f, 16.0f, 16.0f);
-    defaultTheme.popupStyle = AACentered;
-    defaultTheme.contentVerticalPadding = 10.0f;
-    return defaultTheme;
+    self = [super init];
+    if (self) {
+        self.backgroundColor = [UIColor whiteColor];
+        UIColor *color = [UIColor colorWithRed:72.0/255 green:80.0/255 blue:81.0/255 alpha:1];
+        self.titleColor = self.messageColor = self.buttonTitleColor=color;
+        self.cornerRadius = 6.0f;
+        self.popupContentInsets = UIEdgeInsetsMake(18.0f, 16.0f, 18.0f, 16.0f);
+        self.popupStyle = AACentered;
+        self.contentVerticalPadding = 10.0f;
+    }
+    return self;
 }
 
 @end

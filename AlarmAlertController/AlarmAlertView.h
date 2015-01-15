@@ -47,18 +47,22 @@ typedef void(^SelectionHandler) (AlarmAlertButtonItem *item);
 @property (nonatomic, strong) SelectionHandler selectionHandler;
 @property (nonatomic) AlertButtonStyle buttonStyle;
 
-+ (AlarmAlertButtonItem *)defaultButtonItemWithTitle:(NSAttributedString *)title andStyle:(AlertButtonStyle)style;
+- (instancetype)initWithTitle:(NSString *)title andButtonTitleColor:(UIColor *)color andStyle:(AlertButtonStyle)style;
+- (void)changeToSolidStyle;
 
 @end
 
 @interface AlarmAlertTheme : NSObject
 
+@property (nonatomic, strong) UIColor *titleColor;
+@property (nonatomic, strong) UIColor *messageColor;
+@property (nonatomic, strong) UIColor *buttonTitleColor;
 @property (nonatomic, strong) UIColor *backgroundColor; //content view (Default white)
 @property (nonatomic, assign) CGFloat cornerRadius;
 @property (nonatomic, assign) UIEdgeInsets popupContentInsets; //Inset of labels, images,buttons
 @property (nonatomic, assign) AlarmAlertStyle popupStyle; //center,action sheet,full screen
 @property (nonatomic, assign) CGFloat contentVerticalPadding; // Spacing between each vertical element
 
-+ (AlarmAlertTheme *)defaultTheme;
+- (instancetype)initWithDefaultTheme;
 
 @end
