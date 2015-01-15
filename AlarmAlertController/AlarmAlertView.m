@@ -4,6 +4,7 @@
 #define SYSTEM_VERSION_LESS_THAN(v) ([[[UIDevice currentDevice] systemVersion] compare:v options:NSNumericSearch] == NSOrderedAscending)
 #define isIPad   (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad)
 #define buttonFontSize 16
+#define defaultFontColor [UIColor colorWithRed:85.0/255 green:85.0/255 blue:85.0/255 alpha:1]
 
 #pragma mark - AlarmAlertButton
 
@@ -120,14 +121,14 @@
     self.hLine = [self getLineView];//a horizontal line is already needed
     [self.contentView addSubview:self.hLine];
     
-    if ([self twoButtonsOnly]) {
+    if ([self twoButtonsOnly] && ![self isActionSheet]) {
         self.vLine = [self getLineView];
         [self.contentView addSubview:self.vLine];
     }
     
     if (self.buttonItems.count >0) {
         for (AlarmAlertButtonItem *item in self.buttonItems){
-            if (self.buttonItems.count > 2) {
+            if (self.buttonItems.count > 2 || [self isActionSheet]) {
                 [item changeToSolidStyle];
             }
             AlarmAlertButton *button = [self buttonItem:item];
@@ -166,7 +167,14 @@
                      [self addWidthHeightContraint:NSLayoutAttributeHeight forView:view constant:button.item.buttonHeight];
                      [button addTarget:self action:@selector(actionButtonPressed:) forControlEvents:UIControlEventTouchUpInside];
                      
-                     if ([self twoButtonsOnly]) {
+                     if (self.buttonItems.count > 2 || [self isActionSheet]){
+                         //padding to top
+                         [self addTopBottomConstraintFromTopView:previousSubView toButtomView:view withPadding:self.theme.contentVerticalPadding + 3];
+                         //leftRight
+                         [self addSameDirectionConstraint:NSLayoutAttributeLeft fromSubView:view toSuperView:self.contentView withPadding:self.theme.contentViewInsets.left];
+                         [self addSameDirectionConstraint:NSLayoutAttributeRight fromSubView:view toSuperView:self.contentView withPadding:-self.theme.contentViewInsets.right];
+                     }
+                     else if ([self twoButtonsOnly]) {
                          //padding to top
                          [self addTopBottomConstraintFromTopView:self.hLine toButtomView:view withPadding:0];
                          //leftRight
@@ -183,12 +191,6 @@
                          //leftRight padding
                          [self addSameDirectionConstraint:NSLayoutAttributeLeft fromSubView:view toSuperView:self.contentView withPadding:0];
                          [self addSameDirectionConstraint:NSLayoutAttributeRight fromSubView:view toSuperView:self.contentView withPadding:0];
-                     }else if (self.buttonItems.count > 2){
-                         //padding to top
-                         [self addTopBottomConstraintFromTopView:previousSubView toButtomView:view withPadding:self.theme.contentVerticalPadding + 3];
-                         //leftRight
-                         [self addSameDirectionConstraint:NSLayoutAttributeLeft fromSubView:view toSuperView:self.contentView withPadding:self.theme.contentViewInsets.left];
-                         [self addSameDirectionConstraint:NSLayoutAttributeRight fromSubView:view toSuperView:self.contentView withPadding:-self.theme.contentViewInsets.right];
                      }
                  }
                  else if ([view isKindOfClass:[UILabel class]]) {
@@ -221,7 +223,7 @@
          }
          
          if (index == self.contentView.subviews.count - 1) {//buttom padding
-             [self addSameDirectionConstraint:NSLayoutAttributeBottom fromSubView:view toSuperView:self.contentView withPadding:(self.buttonItems.count <= 2)?0:-(self.theme.contentViewInsets.bottom + 0.0f)];
+             [self addSameDirectionConstraint:NSLayoutAttributeBottom fromSubView:view toSuperView:self.contentView withPadding:(self.buttonItems.count > 2 || [self isActionSheet]) ? -(self.theme.contentViewInsets.bottom + 0.0f) : 0];
          }
          
          [view setContentHuggingPriority:UILayoutPriorityDefaultHigh forAxis:UILayoutConstraintAxisVertical];
@@ -354,6 +356,11 @@
 - (BOOL)twoButtonsOnly
 {
     return self.buttonItems.count == 2? YES : NO;
+}
+
+- (BOOL)isActionSheet
+{
+    return self.theme.popupStyle == AAActionSheet? YES : NO;
 }
 
 - (UILabel *)multilineLabelWithAttributedString:(NSAttributedString *)attributedString
@@ -489,7 +496,7 @@
                 //do nothing
                 break;
             case AlertButtonCancel:
-                buttonTitleColor = [UIColor colorWithRed:85.0/255 green:85.0/255 blue:85.0/255 alpha:1];
+                buttonTitleColor = [defaultFontColor colorWithAlphaComponent:.8];
                 break;
             case AlertButtonDestructive:
                 self.backgroundColor = [UIColor redColor];
@@ -506,7 +513,7 @@
 - (void)changeToSolidStyle
 {
     self.cornerRadius = 3;
-    self.backgroundColor = [UIColor orangeColor];
+    self.backgroundColor = [defaultFontColor colorWithAlphaComponent:.8];
     self.buttonHeight = 45;
     NSAttributedString *buttonString = [AlarmAlertView attributeStringWithTitle:self.buttonTitle.string attributes:@{NSFontAttributeName : [UIFont boldSystemFontOfSize:buttonFontSize], NSForegroundColorAttributeName : [UIColor whiteColor]}];
     self.buttonTitle = buttonString;
@@ -523,11 +530,11 @@
     self = [super init];
     if (self) {
         self.backgroundColor = [UIColor whiteColor];
-        UIColor *color = [UIColor colorWithRed:85.0/255 green:85.0/255 blue:85.0/255 alpha:1];
+        UIColor *color = defaultFontColor;
         self.titleColor = self.messageColor = self.buttonTitleColor=color;
         self.cornerRadius = 6.0f;
-        self.titleFontSize = 17.f;
-        self.messageFontSize = 14.f;
+        self.titleFontSize = 18.f;
+        self.messageFontSize = 15.f;
         self.contentViewInsets = UIEdgeInsetsMake(17.0f, 15.0f, 17.0f, 15.0f);
         self.popupStyle = AACentered;
         self.contentVerticalPadding = 10.0f;
