@@ -1,6 +1,7 @@
 
 #import "AlarmAlertView.h"
 
+#define SYSTEM_VERSION_LESS_THAN(v) ([[[UIDevice currentDevice] systemVersion] compare:v options:NSNumericSearch] == NSOrderedAscending)
 #define isIPad   (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad)
 #define buttonFontSize 16
 
@@ -149,10 +150,10 @@
      {
          if (index == 0) {
              //padding to the top of contentView
-             [self addSameDirectionConstraint:NSLayoutAttributeTop fromSubView:view toSuperView:self.contentView withPadding:self.theme.popupContentInsets.top];
+             [self addSameDirectionConstraint:NSLayoutAttributeTop fromSubView:view toSuperView:self.contentView withPadding:self.theme.contentViewInsets.top];
              //leftRight padding
-             [self addSameDirectionConstraint:NSLayoutAttributeLeft fromSubView:view toSuperView:self.contentView withPadding:self.theme.popupContentInsets.left];
-             [self addSameDirectionConstraint:NSLayoutAttributeRight fromSubView:view toSuperView:self.contentView withPadding:-self.theme.popupContentInsets.right];
+             [self addSameDirectionConstraint:NSLayoutAttributeLeft fromSubView:view toSuperView:self.contentView withPadding:self.theme.contentViewInsets.left];
+             [self addSameDirectionConstraint:NSLayoutAttributeRight fromSubView:view toSuperView:self.contentView withPadding:-self.theme.contentViewInsets.right];
          }else {
              UIView *previousSubView = [self.contentView.subviews objectAtIndex:index - 1];
              if (previousSubView) {
@@ -186,16 +187,16 @@
                          //padding to top
                          [self addTopBottomConstraintFromTopView:previousSubView toButtomView:view withPadding:self.theme.contentVerticalPadding + 3];
                          //leftRight
-                         [self addSameDirectionConstraint:NSLayoutAttributeLeft fromSubView:view toSuperView:self.contentView withPadding:self.theme.popupContentInsets.left];
-                         [self addSameDirectionConstraint:NSLayoutAttributeRight fromSubView:view toSuperView:self.contentView withPadding:-self.theme.popupContentInsets.right];
+                         [self addSameDirectionConstraint:NSLayoutAttributeLeft fromSubView:view toSuperView:self.contentView withPadding:self.theme.contentViewInsets.left];
+                         [self addSameDirectionConstraint:NSLayoutAttributeRight fromSubView:view toSuperView:self.contentView withPadding:-self.theme.contentViewInsets.right];
                      }
                  }
                  else if ([view isKindOfClass:[UILabel class]]) {
                      //padding to top
                      [self addTopBottomConstraintFromTopView:previousSubView toButtomView:view withPadding:self.theme.contentVerticalPadding];
                      //leftRight padding
-                     [self addSameDirectionConstraint:NSLayoutAttributeLeft fromSubView:view toSuperView:self.contentView withPadding:self.theme.popupContentInsets.left];
-                     [self addSameDirectionConstraint:NSLayoutAttributeRight fromSubView:view toSuperView:self.contentView withPadding:-self.theme.popupContentInsets.right];
+                     [self addSameDirectionConstraint:NSLayoutAttributeLeft fromSubView:view toSuperView:self.contentView withPadding:self.theme.contentViewInsets.left];
+                     [self addSameDirectionConstraint:NSLayoutAttributeRight fromSubView:view toSuperView:self.contentView withPadding:-self.theme.contentViewInsets.right];
                  }
                  else if (view == self.hLine) {
                      //padding to top
@@ -220,7 +221,7 @@
          }
          
          if (index == self.contentView.subviews.count - 1) {//buttom padding
-             [self addSameDirectionConstraint:NSLayoutAttributeBottom fromSubView:view toSuperView:self.contentView withPadding:(self.buttonItems.count <= 2)?0:-(self.theme.popupContentInsets.bottom + 0.0f)];
+             [self addSameDirectionConstraint:NSLayoutAttributeBottom fromSubView:view toSuperView:self.contentView withPadding:(self.buttonItems.count <= 2)?0:-(self.theme.contentViewInsets.bottom + 0.0f)];
          }
          
          [view setContentHuggingPriority:UILayoutPriorityDefaultHigh forAxis:UILayoutConstraintAxisVertical];
@@ -364,14 +365,6 @@
     return label;
 }
 
-- (UIImageView *)centeredImageViewForImage:(UIImage *)image
-{
-    UIImageView *imageView = [[UIImageView alloc] initWithImage:image];
-    [imageView setTranslatesAutoresizingMaskIntoConstraints:NO];
-    [imageView setContentMode:UIViewContentModeScaleAspectFit];
-    return imageView;
-}
-
 - (AlarmAlertButton *)buttonItem:(AlarmAlertButtonItem *)item
 {
     AlarmAlertButton *button = [[AlarmAlertButton alloc] init];
@@ -416,6 +409,8 @@
 
 - (void)addMotionEffect:(UIView *)view
 {
+    if (SYSTEM_VERSION_LESS_THAN(@"7.0"))
+        return;
     // Motion effects
     UIInterpolatingMotionEffect *horizontalMotionEffect = [[UIInterpolatingMotionEffect alloc] initWithKeyPath:@"center.x" type:UIInterpolatingMotionEffectTypeTiltAlongHorizontalAxis];
     horizontalMotionEffect.minimumRelativeValue = @(-10);
@@ -533,7 +528,7 @@
         self.cornerRadius = 6.0f;
         self.titleFontSize = 17.f;
         self.messageFontSize = 14.f;
-        self.popupContentInsets = UIEdgeInsetsMake(17.0f, 15.0f, 17.0f, 15.0f);
+        self.contentViewInsets = UIEdgeInsetsMake(17.0f, 15.0f, 17.0f, 15.0f);
         self.popupStyle = AACentered;
         self.contentVerticalPadding = 10.0f;
     }

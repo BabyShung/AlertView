@@ -10,9 +10,9 @@ typedef NS_ENUM(NSInteger, AlertButtonStyle) {
 };
 
 typedef NS_ENUM(NSUInteger, AlarmAlertStyle) {
-    AAActionSheet = 0, // Displays from the bottom.
-    AACentered, // Displays in the center of the screen.
-    AAFullscreen // Displays a fullscreen viewcontroller.
+    AAActionSheet = 0, // action sheet, from the bottom
+    AACentered, // transparent, and view centered
+    AAFullscreen // background white
 };
 
 @interface AlarmAlertView : NSObject
@@ -25,6 +25,7 @@ typedef NS_ENUM(NSUInteger, AlarmAlertStyle) {
                       message:(NSString *)message
                preferredStyle:(AlarmAlertStyle)style;
 
+//adding buttons (similar to UIAlertController)
 - (void)addActionWithTitle:(NSString *)title;
 - (void)addActionWithTitle:(NSString *)title handler:(void (^)(AlarmAlertButtonItem *item))handler;
 - (void)addActionWithTitle:(NSString *)title style:(AlertButtonStyle)style handler:(void (^)(AlarmAlertButtonItem *item))handler;
@@ -62,7 +63,7 @@ typedef void(^SelectionHandler) (AlarmAlertButtonItem *item);
 @property (nonatomic, assign) CGFloat cornerRadius;
 @property (nonatomic, assign) CGFloat titleFontSize;
 @property (nonatomic, assign) CGFloat messageFontSize;
-@property (nonatomic, assign) UIEdgeInsets popupContentInsets; //Inset of labels, images,buttons
+@property (nonatomic, assign) UIEdgeInsets contentViewInsets; //Inset of labels, images,buttons
 @property (nonatomic, assign) AlarmAlertStyle popupStyle; //center,action sheet,full screen
 @property (nonatomic, assign) CGFloat contentVerticalPadding; // Spacing between each vertical element
 
