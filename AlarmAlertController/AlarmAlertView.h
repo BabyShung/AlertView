@@ -57,7 +57,7 @@ typedef void(^SelectionHandler) (AlarmAlertButtonItem *item);
 @property (nonatomic) AlertButtonStyle buttonStyle;
 
 - (instancetype)initWithTitle:(NSString *)title andButtonTitleColor:(UIColor *)color andStyle:(AlertButtonStyle)style;
-- (void)changeToSolidStyle;
+- (void)changeToActionSheetButtonStyle:(UIColor *)themeColor;
 
 @end
 
@@ -65,7 +65,7 @@ typedef void(^SelectionHandler) (AlarmAlertButtonItem *item);
 
 @property (nonatomic, strong) UIColor *titleColor;
 @property (nonatomic, strong) UIColor *messageColor;
-@property (nonatomic, strong) UIColor *buttonTitleColor;
+@property (nonatomic, strong) UIColor *themeColor;
 @property (nonatomic, strong) UIColor *backgroundColor; //content view (Default white)
 @property (nonatomic, assign) CGFloat cornerRadius;
 @property (nonatomic, assign) CGFloat titleFontSize;

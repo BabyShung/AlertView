@@ -77,6 +77,7 @@
 
 - (IBAction)presentActionSheet:(id)sender {
     AlarmAlertView *al = [[AlarmAlertView alloc] initWithTitle:@"Title" message:@"Message" preferredStyle:AAActionSheet];
+    al.theme.themeColor = [UIColor orangeColor];
     [al addActionWithTitle:@"Option1" handler:^(AlarmAlertButtonItem *item) {
         NSLog(@"Option1");
     }];

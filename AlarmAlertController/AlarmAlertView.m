@@ -105,7 +105,7 @@
 
 - (void)addActionWithTitle:(NSString *)title style:(AlertButtonStyle)style handler:(void (^)(AlarmAlertButtonItem *item))handler
 {
-    [self addActionWithTitle:title titleColor:self.theme.buttonTitleColor style:style handler:handler];
+    [self addActionWithTitle:title titleColor:defaultFontColor style:style handler:handler];
 }
 
 - (void)addActionWithTitle:(NSString *)title titleColor:(UIColor *)color style:(AlertButtonStyle)style handler:(void (^)(AlarmAlertButtonItem *item))handler
@@ -159,7 +159,7 @@
     if (self.buttonItems.count >0) {
         for (AlarmAlertButtonItem *item in self.buttonItems){
             if ([self isActionSheet] || self.buttonItems.count > 2 || !self.theme.ifTwoBtnsShouldInOneLine) {
-                [item changeToSolidStyle];
+                [item changeToActionSheetButtonStyle:self.theme.themeColor];
             }
             AlarmAlertButton *button = [self buttonItem:item];
             [self.contentView addSubview:button];
@@ -541,10 +541,10 @@
     return self;
 }
 
-- (void)changeToSolidStyle
+- (void)changeToActionSheetButtonStyle:(UIColor *)themeColor
 {
     self.cornerRadius = 3;
-    self.backgroundColor = [defaultFontColor colorWithAlphaComponent:.8];
+    self.backgroundColor = [themeColor colorWithAlphaComponent:.8];
     self.buttonHeight = 45;
     NSAttributedString *buttonString = [AlarmAlertView attributeStringWithTitle:self.buttonTitle.string attributes:@{NSFontAttributeName : [UIFont boldSystemFontOfSize:buttonFontSize], NSForegroundColorAttributeName : [UIColor whiteColor]}];
     self.buttonTitle = buttonString;
@@ -562,7 +562,7 @@
     if (self) {
         self.backgroundColor = [UIColor whiteColor];
         UIColor *color = defaultFontColor;
-        self.titleColor = self.messageColor = self.buttonTitleColor=color;
+        self.titleColor = self.messageColor = self.themeColor = color;
         self.cornerRadius = 6.0f;
         self.titleFontSize = IS_IPHONE_5_OR_LESS? 15.f : 18.f;
         self.messageFontSize = IS_IPHONE_5_OR_LESS? 14.f : 15.f;
