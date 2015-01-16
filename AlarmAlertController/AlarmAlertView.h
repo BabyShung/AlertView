@@ -13,7 +13,7 @@ typedef NS_ENUM(NSUInteger, AlarmAlertStyle) {
     AAActionSheet = 0, // action sheet, from the bottom
     AACentered, // transparent, and view centered
     AAFullscreen // background white
-};
+};			
 
 @interface AlarmAlertView : NSObject
 
@@ -24,6 +24,10 @@ typedef NS_ENUM(NSUInteger, AlarmAlertStyle) {
 - (instancetype)initWithTitle:(NSString *)title
                       message:(NSString *)message
                preferredStyle:(AlarmAlertStyle)style;
+- (instancetype)initWithTitle:(NSString *)title
+                      message:(NSString *)message
+               preferredStyle:(AlarmAlertStyle)style
+                subViewOfView:(UIView *)superView;
 
 //adding buttons (similar to UIAlertController)
 - (void)addActionWithTitle:(NSString *)title;

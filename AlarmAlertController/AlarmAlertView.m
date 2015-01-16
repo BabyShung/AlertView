@@ -29,7 +29,7 @@
 @property (nonatomic, strong) AlarmAlertView *selfReference;
 @property (nonatomic, strong) UIView *maskView;
 @property (nonatomic, strong) UIView *contentView;
-@property (nonatomic, strong) UIWindow *KeyWindow;
+@property (nonatomic, strong) UIView *KeyWindow;
 
 @property (nonatomic, strong) UIView *hLine;
 @property (nonatomic, strong) UIView *vLine;
@@ -54,6 +54,14 @@
                       message:(NSString *)message
                preferredStyle:(AlarmAlertStyle)style
 {
+    return [self initWithTitle:title message:message preferredStyle:style subViewOfView:nil];
+}
+
+- (instancetype)initWithTitle:(NSString *)title
+                      message:(NSString *)message
+               preferredStyle:(AlarmAlertStyle)style
+                subViewOfView:(UIView *)superView
+{
     self = [super init];
     if (self) {
         _theme = [[AlarmAlertTheme alloc] initWithDefaultTheme];//init theme first
@@ -62,7 +70,7 @@
         _message = message;
         _theme.popupStyle = style;
         _buttonItems = [NSMutableArray array];
-        self.KeyWindow = [[UIApplication sharedApplication] keyWindow];
+        self.KeyWindow = superView;
     }
     return self;
 }
@@ -97,6 +105,10 @@
     [self.maskView setTranslatesAutoresizingMaskIntoConstraints:NO];
     self.maskView.alpha = 0.0;
     self.maskView.backgroundColor = (self.theme.popupStyle == AAFullscreen)? [UIColor whiteColor]:[UIColor colorWithWhite:0.0f alpha:0.5f];
+    
+    if (!self.KeyWindow) {
+        self.KeyWindow = [[UIApplication sharedApplication] keyWindow];
+    }
     [self.KeyWindow addSubview:self.maskView];
     
     self.contentView = [[UIView alloc] init];
