@@ -18,6 +18,9 @@
 - (void)viewDidLoad {
     [super viewDidLoad];
     
+    AlarmAlertButtonItem *item = nil;
+    item.buttonStyle == 2?NSLog(@"a"):NSLog(@"b");
+    
 }
 - (IBAction)presentOneButton:(id)sender {
     AlarmAlertView *al = [[AlarmAlertView alloc] initWithTitle:@"Title" message:@"Message"];

@@ -366,7 +366,7 @@
                      completion:^(BOOL finished) {
                          [self.maskView removeFromSuperview];
                          self.selfReference = nil;//finally remove self reference
-                         if (self.firstResponder) {
+                         if (self.firstResponder && item.buttonStyle == AlertButtonCancel) {
                              [self.firstResponder becomeFirstResponder];
                          }
                      }];
