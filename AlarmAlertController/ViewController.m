@@ -29,7 +29,7 @@
 
 - (IBAction)presentTwoButtons:(id)sender {
     AlarmAlertView *al = [[AlarmAlertView alloc] initWithTitle:@"Are you sure you want to log out?" message:nil];
-    al.theme.titleFontSize = 15;//you can modify the theme (style of the contentView)
+    //al.theme.titleFontSize = 15;//you can modify the theme (style of the contentView)
     [al addActionWithTitle:@"Cancel" handler:^(AlarmAlertButtonItem *item) {
         NSLog(@"Cancel");
     }];
