@@ -154,19 +154,25 @@
 
 - (void)setupLayoutAndContraints
 {
-    [self addSameDirectionConstraint:NSLayoutAttributeTop fromSubView:self.maskView toSuperView:self.KeyWindow withPadding:0];
-    [self addSameDirectionConstraint:NSLayoutAttributeLeft fromSubView:self.maskView toSuperView:self.KeyWindow withPadding:0];
-    [self addSameDirectionConstraint:NSLayoutAttributeRight fromSubView:self.maskView toSuperView:self.KeyWindow withPadding:0];
-    [self addSameDirectionConstraint:NSLayoutAttributeBottom fromSubView:self.maskView toSuperView:self.KeyWindow withPadding:0];
+     NSDictionary *views = @{@"maskView":self.maskView};
+    NSDictionary *metrics = @{@"cTop":@(self.theme.contentViewInsets.top),
+                              @"cLeft":@(self.theme.contentViewInsets.left),
+                              @"cRight":@(self.theme.contentViewInsets.right),
+                              @"topDownPadding":@(self.theme.contentVerticalPadding),
+                              @"topDownPaddingMore":@(self.theme.contentVerticalPadding + 5)
+                              };
+    
+    [self.KeyWindow addConstraints:[NSLayoutConstraint constraintsWithVisualFormat:@"H:|[maskView]|" options:kNilOptions metrics:nil views:views]];
+    [self.KeyWindow addConstraints:[NSLayoutConstraint constraintsWithVisualFormat:@"V:|[maskView]|" options:kNilOptions metrics:nil views:views]];
     
     [self.contentView.subviews enumerateObjectsUsingBlock:^(UIView *view, NSUInteger index, BOOL *stop)
      {
          if (index == 0) {
              //padding to the top of contentView
-             [self addSameDirectionConstraint:NSLayoutAttributeTop fromSubView:view toSuperView:self.contentView withPadding:self.theme.contentViewInsets.top];
+             [self.contentView addConstraints:[NSLayoutConstraint constraintsWithVisualFormat:@"V:|-(cTop)-[view]" options:kNilOptions metrics:metrics views:NSDictionaryOfVariableBindings(view)]];
+             
              //leftRight padding
-             [self addSameDirectionConstraint:NSLayoutAttributeLeft fromSubView:view toSuperView:self.contentView withPadding:self.theme.contentViewInsets.left];
-             [self addSameDirectionConstraint:NSLayoutAttributeRight fromSubView:view toSuperView:self.contentView withPadding:-self.theme.contentViewInsets.right];
+             [self.contentView addConstraints:[NSLayoutConstraint constraintsWithVisualFormat:@"H:|-(cLeft)-[view]-(cRight)-|" options:kNilOptions metrics:metrics views:NSDictionaryOfVariableBindings(view)]];
          }else {
              UIView *previousSubView = [self.contentView.subviews objectAtIndex:index - 1];
              if (previousSubView) {
@@ -175,61 +181,67 @@
                  
                  if ([view isKindOfClass:[UIButton class]]) {//is a button, set height constraint
                      AlarmAlertButton *button = (AlarmAlertButton *)view;
+                     NSDictionary *btnDict = @{@"btnHeight":@(button.item.buttonHeight)};
+                     
                      //height
-                     [self addWidthHeightContraint:NSLayoutAttributeHeight forView:view constant:button.item.buttonHeight];
+                     [self.contentView addConstraints:[NSLayoutConstraint constraintsWithVisualFormat:@"V:[view(btnHeight)]" options:kNilOptions metrics:btnDict views:NSDictionaryOfVariableBindings(view)]];
                      [button addTarget:self action:@selector(actionButtonPressed:) forControlEvents:UIControlEventTouchUpInside];
                      
                      if (self.buttonItems.count > 2 || [self isActionSheet]){
                          //padding to top
-                         [self addTopBottomConstraintFromTopView:previousSubView toButtomView:view withPadding:self.theme.contentVerticalPadding + 3];
+                         [self.contentView addConstraints:[NSLayoutConstraint constraintsWithVisualFormat:@"V:[previousSubView]-(topDownPadding)-[view]" options:kNilOptions metrics:metrics views:NSDictionaryOfVariableBindings(previousSubView,view)]];
+
                          //leftRight
-                         [self addSameDirectionConstraint:NSLayoutAttributeLeft fromSubView:view toSuperView:self.contentView withPadding:self.theme.contentViewInsets.left];
-                         [self addSameDirectionConstraint:NSLayoutAttributeRight fromSubView:view toSuperView:self.contentView withPadding:-self.theme.contentViewInsets.right];
+                         [self.contentView addConstraints:[NSLayoutConstraint constraintsWithVisualFormat:@"H:|-(cLeft)-[view]-(cRight)-|" options:kNilOptions metrics:metrics views:NSDictionaryOfVariableBindings(view)]];
                      }
                      else if ([self twoButtonsOnly]) {
+                         NSDictionary *relatedViews = @{@"view":view,
+                                                        @"hLine":self.hLine,
+                                                        @"vLine":self.vLine};
+                         
                          //padding to top
-                         [self addTopBottomConstraintFromTopView:self.hLine toButtomView:view withPadding:0];
+                         [self.contentView addConstraints:[NSLayoutConstraint constraintsWithVisualFormat:@"V:[hLine][view]" options:kNilOptions metrics:nil views:relatedViews]];
+                         
                          //leftRight
                          if (button.item == self.buttonItems[0]) {
-                             [self addSameDirectionConstraint:NSLayoutAttributeLeft fromSubView:view toSuperView:self.contentView withPadding:0];
-                             [self addSameDirectionConstraint:NSLayoutAttributeRight fromSubView:view toSuperView:self.vLine withPadding:-1];
+                             [self.contentView addConstraints:[NSLayoutConstraint constraintsWithVisualFormat:@"H:|[view][vLine]" options:kNilOptions metrics:nil views:relatedViews]];
                          }else{
-                             [self addSameDirectionConstraint:NSLayoutAttributeLeft fromSubView:view toSuperView:self.vLine withPadding:1];
-                             [self addSameDirectionConstraint:NSLayoutAttributeRight fromSubView:view toSuperView:self.contentView withPadding:0];
+                             [self.contentView addConstraints:[NSLayoutConstraint constraintsWithVisualFormat:@"H:[vLine][view]|" options:kNilOptions metrics:nil views:relatedViews]];
                          }
                      }else if (self.buttonItems.count == 1){
+                         NSDictionary *relatedViews = @{@"view":view,
+                                                        @"hLine":self.hLine};
                          //padding to top
-                         [self addTopBottomConstraintFromTopView:self.hLine toButtomView:view withPadding:0];
+                         [self.contentView addConstraints:[NSLayoutConstraint constraintsWithVisualFormat:@"V:[hLine][view]" options:kNilOptions metrics:nil views:relatedViews]];
                          //leftRight padding
-                         [self addSameDirectionConstraint:NSLayoutAttributeLeft fromSubView:view toSuperView:self.contentView withPadding:0];
-                         [self addSameDirectionConstraint:NSLayoutAttributeRight fromSubView:view toSuperView:self.contentView withPadding:0];
+                         [self.contentView addConstraints:[NSLayoutConstraint constraintsWithVisualFormat:@"H:|[view]|" options:kNilOptions metrics:nil views:NSDictionaryOfVariableBindings(view)]];
                      }
                  }
                  else if ([view isKindOfClass:[UILabel class]]) {
                      //padding to top
-                     [self addTopBottomConstraintFromTopView:previousSubView toButtomView:view withPadding:self.theme.contentVerticalPadding];
+                     [self.contentView addConstraints:[NSLayoutConstraint constraintsWithVisualFormat:@"V:[previousSubView]-(topDownPadding)-[view]" options:kNilOptions metrics:metrics views:NSDictionaryOfVariableBindings(previousSubView,view)]];
                      //leftRight padding
-                     [self addSameDirectionConstraint:NSLayoutAttributeLeft fromSubView:view toSuperView:self.contentView withPadding:self.theme.contentViewInsets.left];
-                     [self addSameDirectionConstraint:NSLayoutAttributeRight fromSubView:view toSuperView:self.contentView withPadding:-self.theme.contentViewInsets.right];
+                     [self.contentView addConstraints:[NSLayoutConstraint constraintsWithVisualFormat:@"H:|-(cLeft)-[view]-(cRight)-|" options:kNilOptions metrics:metrics views:NSDictionaryOfVariableBindings(view)]];
                  }
                  else if (view == self.hLine) {
                      //padding to top
-                     [self addTopBottomConstraintFromTopView:previousSubView toButtomView:view withPadding:self.theme.contentVerticalPadding + 5];
+                     [self.contentView addConstraints:[NSLayoutConstraint constraintsWithVisualFormat:@"V:[previousSubView]-(topDownPaddingMore)-[view]" options:kNilOptions metrics:metrics views:NSDictionaryOfVariableBindings(previousSubView,view)]];
                      //height
-                     [self addWidthHeightContraint:NSLayoutAttributeHeight forView:view constant:0.5];
+                     [self.contentView addConstraints:[NSLayoutConstraint constraintsWithVisualFormat:@"V:[view(0.5)]" options:kNilOptions metrics:nil views:NSDictionaryOfVariableBindings(view)]];
                      //leftRight padding
-                     [self addSameDirectionConstraint:NSLayoutAttributeLeft fromSubView:view toSuperView:self.contentView withPadding:0];
-                     [self addSameDirectionConstraint:NSLayoutAttributeRight fromSubView:view toSuperView:self.contentView withPadding:0];
+                     [self.contentView addConstraints:[NSLayoutConstraint constraintsWithVisualFormat:@"H:|[view]|" options:kNilOptions metrics:nil views:NSDictionaryOfVariableBindings(view)]];
                  }
                  else if (view == self.vLine) {
+                     NSDictionary *relatedViews = @{@"view":view,
+                                                    @"hLine":self.hLine};
                      //padding to top
-                     [self addTopBottomConstraintFromTopView:self.hLine toButtomView:view withPadding:0];
+                     [self.contentView addConstraints:[NSLayoutConstraint constraintsWithVisualFormat:@"V:[hLine][view]" options:kNilOptions metrics:nil views:relatedViews]];
                      //centerX
                      [self.contentView addConstraint:[NSLayoutConstraint constraintWithItem:view attribute:NSLayoutAttributeCenterX relatedBy:NSLayoutRelationEqual toItem:self.contentView attribute:NSLayoutAttributeCenterX multiplier:1.0 constant:0]];
                      //width
-                     [self addWidthHeightContraint:NSLayoutAttributeWidth forView:view constant:0.5];
+                     [self.contentView addConstraints:[NSLayoutConstraint constraintsWithVisualFormat:@"H:[view(0.5)]" options:kNilOptions metrics:nil views:NSDictionaryOfVariableBindings(view)]];
                      //to contentView bottom
-                     [self addSameDirectionConstraint:NSLayoutAttributeBottom fromSubView:view toSuperView:self.contentView withPadding:0];
+                     [self.contentView addConstraints:[NSLayoutConstraint constraintsWithVisualFormat:@"V:[view]|" options:kNilOptions metrics:nil views:NSDictionaryOfVariableBindings(view)]];
                  }
              }
          }
