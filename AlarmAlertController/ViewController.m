@@ -24,7 +24,7 @@
 }
 - (IBAction)presentOneButton:(id)sender {
     AlarmAlertView *al = [[AlarmAlertView alloc] initWithTitle:@"Title" message:@"Message"];
-    [al addActionWithTitle:@"Cancel" style:AlertButtonCancel handler:^(AlarmAlertButtonItem *item) {
+    [al addActionWithTitle:@"CancelCancelCancelncelCancel22222222Cancel" style:AlertButtonCancel handler:^(AlarmAlertButtonItem *item) {
         NSLog(@"one button");
     }];
     [al show];
@@ -33,10 +33,10 @@
 - (IBAction)presentTwoButtons:(id)sender {
     AlarmAlertView *al = [[AlarmAlertView alloc] initWithTitle:@"Are you sure you want to log out?" message:nil];
     //al.theme.titleFontSize = 15;//you can modify the theme (style of the contentView)
-    [al addActionWithTitle:@"Cancel" handler:^(AlarmAlertButtonItem *item) {
+    [al addActionWithTitle:@"Passcode Settings" handler:^(AlarmAlertButtonItem *item) {
         NSLog(@"Cancel");
     }];
-    [al addActionWithTitle:@"Log out" titleColor:[UIColor orangeColor] style:AlertButtonStyleDefault handler:nil];
+    [al addActionWithTitle:@"Not now" titleColor:[UIColor orangeColor] style:AlertButtonStyleDefault handler:nil];
     [al show];
 }
 
@@ -46,6 +46,17 @@
         NSLog(@"Cancel");
     }];
     [al addActionWithTitle:@"Log out" titleColor:[UIColor orangeColor] style:AlertButtonStyleDefault handler:nil];
+    [al show];
+}
+
+- (IBAction)presentTwoButtons3:(id)sender {
+    AlarmAlertView *al = [[AlarmAlertView alloc] initWithTitle:@"Setup Touch ID" message:@"This app now supports Apple's Touch ID feature for quick and secure access to the app using your device's fingerprint reader. Would you like to set it up?"];
+    al.theme.ifTwoBtnsShouldInOneLine = NO;
+    //al.theme.titleFontSize = 15;//you can modify the theme (style of the contentView)
+    [al addActionWithTitle:@"Passcode Settings" handler:^(AlarmAlertButtonItem *item) {
+        NSLog(@"Cancel");
+    }];
+    [al addActionWithTitle:@"Not now" titleColor:[UIColor orangeColor] style:AlertButtonStyleDefault handler:nil];
     [al show];
 }
 
@@ -78,7 +89,7 @@
 }
 
 - (IBAction)appleDefault:(id)sender {
-    UIAlertView *al = [[UIAlertView alloc] initWithTitle:@"Title" message:@"Message" delegate:nil cancelButtonTitle:@"Cancel" otherButtonTitles:@"Option",@"Option",@"Option",@"Option",@"Option",@"Option",@"Option",@"Option",@"Option",@"Option",@"Option",@"Option",@"Option",@"Option",@"Option",@"Option",nil];
+    UIAlertView *al = [[UIAlertView alloc] initWithTitle:@"Title" message:@"Message" delegate:nil cancelButtonTitle:@"Cancel" otherButtonTitles:@"OptionCancelCancelCancelCancelCancelCancelCancelCancelCancelCancelCancelCancelCancelCancel",@"Option",@"Option",@"Option",@"Option",@"Option",@"Option",@"Option",@"Option",nil];
     [al show];
 }
 @end

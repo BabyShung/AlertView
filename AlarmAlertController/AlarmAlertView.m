@@ -151,14 +151,14 @@
     self.hLine = [self getLineView];//a horizontal line is already needed
     [self.contentView addSubview:self.hLine];
     
-    if ([self twoButtonsOnly] && ![self isActionSheet]) {
+    if ([self twoButtonsInOneLine] && ![self isActionSheet]) {
         self.vLine = [self getLineView];
         [self.contentView addSubview:self.vLine];
     }
     
     if (self.buttonItems.count >0) {
         for (AlarmAlertButtonItem *item in self.buttonItems){
-            if (self.buttonItems.count > 2 || [self isActionSheet]) {
+            if ([self isActionSheet] || self.buttonItems.count > 2 || !self.theme.ifTwoBtnsShouldInOneLine) {
                 [item changeToSolidStyle];
             }
             AlarmAlertButton *button = [self buttonItem:item];
@@ -205,14 +205,15 @@
                      [self.contentView addConstraints:[NSLayoutConstraint constraintsWithVisualFormat:@"V:[view(btnHeight)]" options:kNilOptions metrics:btnDict views:NSDictionaryOfVariableBindings(view)]];
                      [button addTarget:self action:@selector(actionButtonPressed:) forControlEvents:UIControlEventTouchUpInside];
                      
-                     if (self.buttonItems.count > 2 || [self isActionSheet]){
+                     if (self.buttonItems.count == 1){
+                         NSDictionary *relatedViews = @{@"view":view,
+                                                        @"hLine":self.hLine};
                          //padding to top
-                         [self.contentView addConstraints:[NSLayoutConstraint constraintsWithVisualFormat:@"V:[previousSubView]-(topDownPadding)-[view]" options:kNilOptions metrics:metrics views:NSDictionaryOfVariableBindings(previousSubView,view)]];
-
-                         //leftRight
-                         [self.contentView addConstraints:[NSLayoutConstraint constraintsWithVisualFormat:@"H:|-(cLeft)-[view]-(cRight)-|" options:kNilOptions metrics:metrics views:NSDictionaryOfVariableBindings(view)]];
+                         [self.contentView addConstraints:[NSLayoutConstraint constraintsWithVisualFormat:@"V:[hLine][view]" options:kNilOptions metrics:nil views:relatedViews]];
+                         //leftRight padding
+                         [self.contentView addConstraints:[NSLayoutConstraint constraintsWithVisualFormat:@"H:|[view]|" options:kNilOptions metrics:nil views:NSDictionaryOfVariableBindings(view)]];
                      }
-                     else if ([self twoButtonsOnly]) {
+                     else if ([self twoButtonsInOneLine] && ![self isActionSheet]) {
                          NSDictionary *relatedViews = @{@"view":view,
                                                         @"hLine":self.hLine,
                                                         @"vLine":self.vLine};
@@ -226,13 +227,13 @@
                          }else{
                              [self.contentView addConstraints:[NSLayoutConstraint constraintsWithVisualFormat:@"H:[vLine][view]|" options:kNilOptions metrics:nil views:relatedViews]];
                          }
-                     }else if (self.buttonItems.count == 1){
-                         NSDictionary *relatedViews = @{@"view":view,
-                                                        @"hLine":self.hLine};
+                     }
+                     else{
                          //padding to top
-                         [self.contentView addConstraints:[NSLayoutConstraint constraintsWithVisualFormat:@"V:[hLine][view]" options:kNilOptions metrics:nil views:relatedViews]];
-                         //leftRight padding
-                         [self.contentView addConstraints:[NSLayoutConstraint constraintsWithVisualFormat:@"H:|[view]|" options:kNilOptions metrics:nil views:NSDictionaryOfVariableBindings(view)]];
+                         [self.contentView addConstraints:[NSLayoutConstraint constraintsWithVisualFormat:@"V:[previousSubView]-(topDownPadding)-[view]" options:kNilOptions metrics:metrics views:NSDictionaryOfVariableBindings(previousSubView,view)]];
+
+                         //leftRight
+                         [self.contentView addConstraints:[NSLayoutConstraint constraintsWithVisualFormat:@"H:|-(cLeft)-[view]-(cRight)-|" options:kNilOptions metrics:metrics views:NSDictionaryOfVariableBindings(view)]];
                      }
                  }
                  else if ([view isKindOfClass:[UILabel class]]) {
@@ -265,7 +266,7 @@
          }
          
          if (index == self.contentView.subviews.count - 1) {//buttom padding
-             NSDictionary *metrics = @{@"padding":@((self.buttonItems.count > 2 || [self isActionSheet]) ? (self.theme.contentViewInsets.bottom + 0.0f) : 0)};
+             NSDictionary *metrics = @{@"padding":@((self.buttonItems.count > 2 || [self isActionSheet] || !self.theme.ifTwoBtnsShouldInOneLine) ? (self.theme.contentViewInsets.bottom + 0.0f) : 0)};
              [self.contentView addConstraints:[NSLayoutConstraint constraintsWithVisualFormat:@"V:[view]-(padding)-|" options:kNilOptions metrics:metrics views:NSDictionaryOfVariableBindings(view)]];
          }
          
@@ -417,9 +418,9 @@
 
 #pragma mark - Helpers
 
-- (BOOL)twoButtonsOnly
+- (BOOL)twoButtonsInOneLine
 {
-    return self.buttonItems.count == 2? YES : NO;
+    return self.buttonItems.count == 2 && self.theme.ifTwoBtnsShouldInOneLine? YES : NO;
 }
 
 - (BOOL)isActionSheet
@@ -444,6 +445,8 @@
     NSAttributedString *alphaString = [self attributedStringChangeColorAlpha:item.buttonTitle];
     [button setAttributedTitle:alphaString forState:UIControlStateHighlighted];
     [button setBackgroundColor:item.backgroundColor];
+    button.titleLabel.adjustsFontSizeToFitWidth = TRUE;
+    [button.titleLabel setMinimumScaleFactor:.5];
     [button.layer setCornerRadius:item.cornerRadius];
     [button.layer setBorderColor:item.borderColor.CGColor];
     [button.layer setBorderWidth:item.borderWidth];
@@ -563,6 +566,7 @@
         self.cornerRadius = 6.0f;
         self.titleFontSize = IS_IPHONE_5_OR_LESS? 15.f : 18.f;
         self.messageFontSize = IS_IPHONE_5_OR_LESS? 14.f : 15.f;
+        self.ifTwoBtnsShouldInOneLine = YES;
         self.contentViewInsets = UIEdgeInsetsMake(17.0f, 15.0f, 17.0f, 15.0f);
         self.popupStyle = AACentered;
         self.contentVerticalPadding = 10.0f;
