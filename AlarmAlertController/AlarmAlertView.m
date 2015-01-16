@@ -499,7 +499,7 @@
                 //do nothing
                 break;
             case AlertButtonCancel:
-                buttonTitleColor = [defaultFontColor colorWithAlphaComponent:.8];
+                buttonTitleColor = defaultFontColor;
                 break;
             case AlertButtonDestructive:
                 self.backgroundColor = [UIColor redColor];
