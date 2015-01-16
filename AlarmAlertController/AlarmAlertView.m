@@ -12,7 +12,7 @@
 
 #define IS_IPHONE_5_OR_LESS (IS_IPHONE && SCREEN_MAX_LENGTH < 667.0)
 
-#define buttonFontSize IS_IPHONE_5_OR_LESS?14.0:16.0
+#define buttonFontSize IS_IPHONE_5_OR_LESS?15.0:16.0
 #define defaultFontColor [UIColor colorWithRed:85.0/255 green:85.0/255 blue:85.0/255 alpha:1]
 
 #pragma mark - AlarmAlertButton
