@@ -247,7 +247,8 @@
          }
          
          if (index == self.contentView.subviews.count - 1) {//buttom padding
-             [self addSameDirectionConstraint:NSLayoutAttributeBottom fromSubView:view toSuperView:self.contentView withPadding:(self.buttonItems.count > 2 || [self isActionSheet]) ? -(self.theme.contentViewInsets.bottom + 0.0f) : 0];
+             NSDictionary *metrics = @{@"padding":@((self.buttonItems.count > 2 || [self isActionSheet]) ? (self.theme.contentViewInsets.bottom + 0.0f) : 0)};
+             [self.contentView addConstraints:[NSLayoutConstraint constraintsWithVisualFormat:@"V:[view]-(padding)-|" options:kNilOptions metrics:metrics views:NSDictionaryOfVariableBindings(view)]];
          }
          
          [view setContentHuggingPriority:UILayoutPriorityDefaultHigh forAxis:UILayoutConstraintAxisVertical];
@@ -462,42 +463,6 @@
     [view setTranslatesAutoresizingMaskIntoConstraints:NO];
     view.backgroundColor = [UIColor colorWithRed:0.824 green:0.827 blue:0.831 alpha:1.000];
     return view;
-}
-
-- (NSLayoutConstraint *)addSameDirectionConstraint:(NSLayoutAttribute)attribute fromSubView:(UIView*)view toSuperView:(UIView*)superView withPadding:(CGFloat)padding
-{
-    NSLayoutConstraint *constraint = [NSLayoutConstraint constraintWithItem:view
-                                                                  attribute:attribute
-                                                                  relatedBy:NSLayoutRelationEqual
-                                                                     toItem:superView
-                                                                  attribute:attribute
-                                                                 multiplier:1
-                                                                   constant:padding];
-    [view.superview addConstraint:constraint];
-    return constraint;
-}
-
-- (NSLayoutConstraint *)addTopBottomConstraintFromTopView:(UIView*)topView toButtomView:(UIView*)buttomView withPadding:(CGFloat)padding
-{
-    NSLayoutConstraint *constraint = [NSLayoutConstraint constraintWithItem:buttomView
-                                                                  attribute:NSLayoutAttributeTop
-                                                                  relatedBy:NSLayoutRelationEqual
-                                                                     toItem:topView
-                                                                  attribute:NSLayoutAttributeBottom
-                                                                 multiplier:1
-                                                                   constant:padding];
-    [topView.superview addConstraint:constraint];
-    return constraint;
-}
-
-- (NSLayoutConstraint *)addWidthHeightContraint:(NSLayoutAttribute)attribute forView:(UIView *)view constant:(CGFloat)constant
-{
-    if (attribute == NSLayoutAttributeHeight || attribute == NSLayoutAttributeWidth) {
-        NSLayoutConstraint *constraint = [NSLayoutConstraint constraintWithItem:view attribute:attribute relatedBy:NSLayoutRelationEqual toItem:nil attribute:NSLayoutAttributeNotAnAttribute multiplier:1.0 constant:constant];
-        [view.superview addConstraint:constraint];
-        return constraint;
-    }
-    return nil;
 }
 
 @end
