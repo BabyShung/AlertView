@@ -356,8 +356,6 @@
                      }
                      completion:^(BOOL finished) {
                          [self.maskView removeFromSuperview];
-                         self.maskView = nil;
-                         self.contentView = nil;
                          self.selfReference = nil;//finally remove self reference
                      }];
 }
