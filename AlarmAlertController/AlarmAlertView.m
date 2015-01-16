@@ -59,6 +59,13 @@
 
 - (instancetype)initWithTitle:(NSString *)title
                       message:(NSString *)message
+                subViewOfView:(UIView *)superView
+{
+    return [self initWithTitle:title message:message preferredStyle:AACentered subViewOfView:superView];
+}
+
+- (instancetype)initWithTitle:(NSString *)title
+                      message:(NSString *)message
                preferredStyle:(AlarmAlertStyle)style
                 subViewOfView:(UIView *)superView
 {

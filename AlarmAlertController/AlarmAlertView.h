@@ -26,6 +26,9 @@ typedef NS_ENUM(NSUInteger, AlarmAlertStyle) {
                preferredStyle:(AlarmAlertStyle)style;
 - (instancetype)initWithTitle:(NSString *)title
                       message:(NSString *)message
+                subViewOfView:(UIView *)superView;
+- (instancetype)initWithTitle:(NSString *)title
+                      message:(NSString *)message
                preferredStyle:(AlarmAlertStyle)style
                 subViewOfView:(UIView *)superView;
 
