@@ -31,6 +31,8 @@
 
 @interface AlarmAlertView ()
 
+@property (nonatomic, strong) id firstResponder;
+
 @property (nonatomic, strong) NSString *title;
 @property (nonatomic, strong) NSString *message;
 @property (nonatomic, strong) NSMutableArray *buttonItems;
@@ -38,7 +40,7 @@
 @property (nonatomic, strong) AlarmAlertView *selfReference;
 @property (nonatomic, strong) UIView *maskView;
 @property (nonatomic, strong) UIView *contentView;
-@property (nonatomic, strong) UIView *KeyWindow;
+@property (nonatomic, strong) UIView *KeyView;
 
 @property (nonatomic, strong) UIView *hLine;
 @property (nonatomic, strong) UIView *vLine;
@@ -86,7 +88,7 @@
         _message = message;
         _theme.popupStyle = style;
         _buttonItems = [NSMutableArray array];
-        self.KeyWindow = superView;
+        self.KeyView = superView;
     }
     return self;
 }
@@ -122,10 +124,10 @@
     self.maskView.alpha = 0.0;
     self.maskView.backgroundColor = (self.theme.popupStyle == AAFullscreen)? [UIColor whiteColor]:[UIColor colorWithWhite:0.0f alpha:0.5f];
     
-    if (!self.KeyWindow) {
-        self.KeyWindow = [[UIApplication sharedApplication] keyWindow];
+    if (!self.KeyView) {
+        self.KeyView = [[UIApplication sharedApplication] keyWindow];
     }
-    [self.KeyWindow addSubview:self.maskView];
+    [self.KeyView addSubview:self.maskView];
     
     self.contentView = [[UIView alloc] init];
     [self.contentView setTranslatesAutoresizingMaskIntoConstraints:NO];
@@ -178,8 +180,8 @@
                               @"topDownPaddingMore":@(self.theme.contentVerticalPadding + 5)
                               };
     
-    [self.KeyWindow addConstraints:[NSLayoutConstraint constraintsWithVisualFormat:@"H:|[maskView]|" options:kNilOptions metrics:nil views:views]];
-    [self.KeyWindow addConstraints:[NSLayoutConstraint constraintsWithVisualFormat:@"V:|[maskView]|" options:kNilOptions metrics:nil views:views]];
+    [self.KeyView addConstraints:[NSLayoutConstraint constraintsWithVisualFormat:@"H:|[maskView]|" options:kNilOptions metrics:nil views:views]];
+    [self.KeyView addConstraints:[NSLayoutConstraint constraintsWithVisualFormat:@"V:|[maskView]|" options:kNilOptions metrics:nil views:views]];
     
     [self.contentView.subviews enumerateObjectsUsingBlock:^(UIView *view, NSUInteger index, BOOL *stop)
      {
@@ -323,8 +325,10 @@
     [self setPresentedConstraints];
     [self addMotionEffect:self.contentView];
     
+    self.firstResponder = [self findViewThatIsFirstResponder:self.KeyView];
+    NSLog(@"xxx %@",self.firstResponder);
     //dismiss keyboard
-    [self.KeyWindow endEditing:YES];
+    [self.KeyView endEditing:YES];
     
     [UIView animateWithDuration:flag ? 0.3f : 0.0f
                           delay:0
@@ -357,7 +361,23 @@
                      completion:^(BOOL finished) {
                          [self.maskView removeFromSuperview];
                          self.selfReference = nil;//finally remove self reference
+                         if (self.firstResponder) {
+                             [self.firstResponder becomeFirstResponder];
+                         }
                      }];
+}
+
+- (UIView *)findViewThatIsFirstResponder:(UIView *)superView
+{
+    if (superView.isFirstResponder)
+        return superView;
+    for (UIView *subView in superView.subviews) {
+        UIView *firstResponder = [self findViewThatIsFirstResponder:subView];
+        if (firstResponder != nil) {
+            return firstResponder;
+        }
+    }
+    return nil;
 }
 
 - (void)setOriginConstraints
@@ -367,7 +387,7 @@
         self.contentViewCenterXConstraint.constant = 0;
     }
     else if (self.theme.popupStyle == AAActionSheet) {
-        self.contentViewBottom.constant = self.KeyWindow.bounds.size.height;
+        self.contentViewBottom.constant = self.KeyView.bounds.size.height;
     }
 }
 
