@@ -348,6 +348,11 @@
 
 - (void)dismissViewAnimated:(BOOL)flag
 {
+    [self dismissViewAnimated:flag andSenderItem:nil];
+}
+
+- (void)dismissViewAnimated:(BOOL)flag andSenderItem:(AlarmAlertButtonItem *)item
+{
     [self setOriginConstraints];
     
     [UIView animateWithDuration:flag ? 0.3f : 0.0f
@@ -407,7 +412,7 @@
     if (sender.item.selectionHandler) {
         sender.item.selectionHandler(sender.item);
     }
-    [self dismissViewAnimated:YES];
+    [self dismissViewAnimated:YES andSenderItem:sender.item];
 }
 
 #pragma mark - Helpers

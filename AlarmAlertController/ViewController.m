@@ -21,7 +21,7 @@
 }
 - (IBAction)presentOneButton:(id)sender {
     AlarmAlertView *al = [[AlarmAlertView alloc] initWithTitle:@"Title" message:@"Message"];
-    [al addActionWithTitle:@"Cancel" handler:^(AlarmAlertButtonItem *item) {
+    [al addActionWithTitle:@"Cancel" style:AlertButtonCancel handler:^(AlarmAlertButtonItem *item) {
         NSLog(@"one button");
     }];
     [al show];
