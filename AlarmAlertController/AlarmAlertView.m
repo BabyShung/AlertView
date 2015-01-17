@@ -40,7 +40,7 @@
 @property (nonatomic, strong) AlarmAlertView *selfReference;
 @property (nonatomic, strong) UIView *maskView;
 @property (nonatomic, strong) UIView *contentView;
-@property (nonatomic, strong) UIView *KeyView;
+@property (nonatomic, strong) UIView *KeyView;//alertView show in KeyView
 
 @property (nonatomic, strong) UIView *hLine;
 @property (nonatomic, strong) UIView *vLine;
@@ -92,6 +92,8 @@
     }
     return self;
 }
+
+#pragma mark - adding buttons
 
 - (void)addActionWithTitle:(NSString *)title
 {
@@ -172,7 +174,7 @@
 
 - (void)setupLayoutAndContraints
 {
-     NSDictionary *views = @{@"maskView":self.maskView};
+    NSDictionary *views = @{@"maskView":self.maskView};
     NSDictionary *metrics = @{@"cTop":@(self.theme.contentViewInsets.top),
                               @"cLeft":@(self.theme.contentViewInsets.left),
                               @"cRight":@(self.theme.contentViewInsets.right),
@@ -195,7 +197,7 @@
              UIView *previousSubView = [self.contentView.subviews objectAtIndex:index - 1];
              if (previousSubView) {
                  
-                 //**** several cases: is Button or Label or HLine or VLine ****
+                 //**** CASES: is Button or Label or HLine or VLine ****
                  
                  if ([view isKindOfClass:[UIButton class]]) {//is a button, set height constraint
                      AlarmAlertButton *button = (AlarmAlertButton *)view;
@@ -231,7 +233,7 @@
                      else{
                          //padding to top
                          [self.contentView addConstraints:[NSLayoutConstraint constraintsWithVisualFormat:@"V:[previousSubView]-(topDownPadding)-[view]" options:kNilOptions metrics:metrics views:NSDictionaryOfVariableBindings(previousSubView,view)]];
-
+                         
                          //leftRight
                          [self.contentView addConstraints:[NSLayoutConstraint constraintsWithVisualFormat:@"H:|-(cLeft)-[view]-(cRight)-|" options:kNilOptions metrics:metrics views:NSDictionaryOfVariableBindings(view)]];
                      }
@@ -327,7 +329,6 @@
     [self addMotionEffect:self.contentView];
     
     self.firstResponder = [self findViewThatIsFirstResponder:self.KeyView];
-    NSLog(@"xxx %@",self.firstResponder);
     //dismiss keyboard
     [self.KeyView endEditing:YES];
     
@@ -487,12 +488,12 @@
         return;
     // Motion effects
     UIInterpolatingMotionEffect *horizontalMotionEffect = [[UIInterpolatingMotionEffect alloc] initWithKeyPath:@"center.x" type:UIInterpolatingMotionEffectTypeTiltAlongHorizontalAxis];
-    horizontalMotionEffect.minimumRelativeValue = @(-10);
-    horizontalMotionEffect.maximumRelativeValue = @(10);
+    horizontalMotionEffect.minimumRelativeValue = @(-12);
+    horizontalMotionEffect.maximumRelativeValue = @(12);
     
     UIInterpolatingMotionEffect *verticalMotionEffect = [[UIInterpolatingMotionEffect alloc] initWithKeyPath:@"center.y" type:UIInterpolatingMotionEffectTypeTiltAlongVerticalAxis];
-    verticalMotionEffect.minimumRelativeValue = @(-10);
-    verticalMotionEffect.maximumRelativeValue = @(10);
+    verticalMotionEffect.minimumRelativeValue = @(-12);
+    verticalMotionEffect.maximumRelativeValue = @(12);
     
     UIMotionEffectGroup *group = [UIMotionEffectGroup new];
     group.motionEffects = @[horizontalMotionEffect, verticalMotionEffect];
@@ -535,8 +536,8 @@
             default:
                 break;
         }
-        NSAttributedString *buttonString = [AlarmAlertView attributeStringWithTitle:title attributes:@{NSFontAttributeName : [UIFont boldSystemFontOfSize:buttonFontSize], NSForegroundColorAttributeName : buttonTitleColor}];
-        self.buttonTitle = buttonString;
+        
+        self.buttonTitle = [AlarmAlertView attributeStringWithTitle:title attributes:@{NSFontAttributeName : [UIFont boldSystemFontOfSize:buttonFontSize], NSForegroundColorAttributeName : buttonTitleColor}];
     }
     return self;
 }

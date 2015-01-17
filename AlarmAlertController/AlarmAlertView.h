@@ -13,7 +13,7 @@ typedef NS_ENUM(NSUInteger, AlarmAlertStyle) {
     AAActionSheet = 0, // action sheet, from the bottom
     AACentered, // transparent, and view centered
     AAFullscreen // background white
-};			
+};
 
 @interface AlarmAlertView : NSObject
 
@@ -70,7 +70,7 @@ typedef void(^SelectionHandler) (AlarmAlertButtonItem *item);
 @property (nonatomic, assign) CGFloat cornerRadius;
 @property (nonatomic, assign) CGFloat titleFontSize;
 @property (nonatomic, assign) CGFloat messageFontSize;
-@property (nonatomic, assign) BOOL ifTwoBtnsShouldInOneLine;
+@property (nonatomic, assign) BOOL ifTwoBtnsShouldInOneLine;//if two buttons, in one row or not
 @property (nonatomic, assign) UIEdgeInsets contentViewInsets; //Inset of labels, images,buttons
 @property (nonatomic, assign) AlarmAlertStyle popupStyle; //center,action sheet,full screen
 @property (nonatomic, assign) CGFloat contentVerticalPadding; // Spacing between each vertical element
