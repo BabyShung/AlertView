@@ -163,6 +163,20 @@
                                     <action selector="presentTwoButtons3:" destination="BYZ-38-t0r" eventType="touchUpInside" id="dOE-Wp-WDj"/>
                                 </connections>
                             </button>
+                            <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="tlk-gM-jpg">
+                                <rect key="frame" x="378" y="246" width="84" height="60"/>
+                                <color key="backgroundColor" red="0.90588241820000004" green="0.90588241820000004" blue="0.90980398650000005" alpha="1" colorSpace="deviceRGB"/>
+                                <constraints>
+                                    <constraint firstAttribute="width" constant="84" id="6ce-rT-33Q"/>
+                                    <constraint firstAttribute="height" constant="60" id="LXt-85-N0c"/>
+                                </constraints>
+                                <state key="normal" title="Button">
+                                    <color key="titleShadowColor" white="0.5" alpha="1" colorSpace="calibratedWhite"/>
+                                </state>
+                                <connections>
+                                    <action selector="presentActionSheetOneButton:" destination="BYZ-38-t0r" eventType="touchUpInside" id="gdw-7e-POs"/>
+                                </connections>
+                            </button>
                         </subviews>
                         <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="calibratedWhite"/>
                         <constraints>
@@ -194,6 +208,8 @@
                             <constraint firstAttribute="centerX" secondItem="WRy-Qq-dlE" secondAttribute="centerX" id="mVL-Xr-2gx"/>
                             <constraint firstItem="hCM-gw-QxK" firstAttribute="leading" secondItem="tTX-x5-p4y" secondAttribute="trailing" constant="30" id="nII-wO-t8K"/>
                             <constraint firstItem="hCM-gw-QxK" firstAttribute="centerY" secondItem="tTX-x5-p4y" secondAttribute="centerY" id="osj-av-Deh"/>
+                            <constraint firstItem="tlk-gM-jpg" firstAttribute="top" secondItem="7ke-Db-5Hs" secondAttribute="bottom" constant="30" id="sEm-J8-Bgm"/>
+                            <constraint firstItem="tlk-gM-jpg" firstAttribute="leading" secondItem="Q0I-V8-EqZ" secondAttribute="trailing" constant="28" id="uVY-Cy-tRl"/>
                             <constraint firstItem="wfy-db-euE" firstAttribute="top" secondItem="aYi-GK-aWk" secondAttribute="bottom" constant="165" id="vD1-OX-hE3"/>
                             <constraint firstAttribute="centerY" secondItem="hCM-gw-QxK" secondAttribute="centerY" id="zIU-tD-fJH"/>
                         </constraints>

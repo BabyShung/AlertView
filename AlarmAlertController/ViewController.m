@@ -24,7 +24,7 @@
 }
 - (IBAction)presentOneButton:(id)sender {
     AlarmAlertView *al = [[AlarmAlertView alloc] initWithTitle:@"Title" message:@"Message"];
-    [al addActionWithTitle:@"CancelCancelCancelncelCancel22222222Cancel" style:AlertButtonCancel handler:^(AlarmAlertButtonItem *item) {
+    [al addActionWithTitle:@"CancelCancelCancelncel" style:AlertButtonCancel handler:^(AlarmAlertButtonItem *item) {
         NSLog(@"one button");
     }];
     [al show];
@@ -33,10 +33,10 @@
 - (IBAction)presentTwoButtons:(id)sender {
     AlarmAlertView *al = [[AlarmAlertView alloc] initWithTitle:@"Are you sure you want to log out?" message:nil];
     //al.theme.titleFontSize = 15;//you can modify the theme (style of the contentView)
-    [al addActionWithTitle:@"Passcode Settings" handler:^(AlarmAlertButtonItem *item) {
+    [al addActionWithTitle:@"Cancel" style:AlertButtonCancel handler:^(AlarmAlertButtonItem *item) {
         NSLog(@"Cancel");
     }];
-    [al addActionWithTitle:@"Not now" titleColor:[UIColor orangeColor] style:AlertButtonStyleDefault handler:nil];
+    [al addActionWithTitle:@"Passcode Settings" titleColor:[UIColor orangeColor] style:AlertButtonStyleDefault handler:nil];
     [al show];
 }
 
@@ -57,6 +57,14 @@
         NSLog(@"Cancel");
     }];
     [al addActionWithTitle:@"Not now" titleColor:[UIColor orangeColor] style:AlertButtonStyleDefault handler:nil];
+    [al show];
+}
+
+- (IBAction)presentActionSheetOneButton:(id)sender {
+    AlarmAlertView *al = [[AlarmAlertView alloc] initWithTitle:@"Title" message:@"Message" preferredStyle:AAActionSheet];
+    [al addActionWithTitle:@"Option1" handler:^(AlarmAlertButtonItem *item) {
+        NSLog(@"Option1");
+    }];
     [al show];
 }
 

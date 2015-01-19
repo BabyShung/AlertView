@@ -11,8 +11,7 @@ typedef NS_ENUM(NSInteger, AlertButtonStyle) {
 
 typedef NS_ENUM(NSUInteger, AlarmAlertStyle) {
     AAActionSheet = 0, // action sheet, from the bottom
-    AACentered, // transparent, and view centered
-    AAFullscreen // background white
+    AACentered // transparent, and view centered
 };
 
 @interface AlarmAlertView : NSObject

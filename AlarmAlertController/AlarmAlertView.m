@@ -124,7 +124,7 @@
     self.maskView = [[UIView alloc] init];
     [self.maskView setTranslatesAutoresizingMaskIntoConstraints:NO];
     self.maskView.alpha = 0.0;
-    self.maskView.backgroundColor = (self.theme.popupStyle == AAFullscreen)? [UIColor whiteColor]:[UIColor colorWithWhite:0.0f alpha:0.5f];
+    self.maskView.backgroundColor = [UIColor colorWithWhite:0.0f alpha:0.5f];
     
     if (!self.KeyView) {
         self.KeyView = [[UIApplication sharedApplication] keyWindow];
@@ -138,33 +138,42 @@
     self.contentView.layer.cornerRadius = self.theme.popupStyle == AACentered ? self.theme.cornerRadius : 0.0f;
     [self.maskView addSubview:self.contentView];
     
+    //adding title label
     if (self.title) {
         NSAttributedString *aTitle = [AlarmAlertView attributeStringWithTitle:self.title attributes:@{NSFontAttributeName : [UIFont boldSystemFontOfSize:self.theme.titleFontSize], NSForegroundColorAttributeName : self.theme.titleColor}];
         UILabel *title = [self multilineLabelWithAttributedString:aTitle];
         [self.contentView addSubview:title];
     }
     
+    //adding msg label
     if (self.message) {
         NSAttributedString *aMessage = [AlarmAlertView attributeStringWithTitle:self.message attributes:@{NSFontAttributeName : [UIFont systemFontOfSize:self.theme.messageFontSize], NSForegroundColorAttributeName : self.theme.messageColor}];
         UILabel *label = [self multilineLabelWithAttributedString:aMessage];
         [self.contentView addSubview:label];
     }
     
-    self.hLine = [self getLineView];//a horizontal line is already needed
-    [self.contentView addSubview:self.hLine];
-    
-    if ([self twoButtonsInOneLine] && ![self isActionSheet]) {
-        self.vLine = [self getLineView];
-        [self.contentView addSubview:self.vLine];
-    }
-    
-    if (self.buttonItems.count >0) {
-        for (AlarmAlertButtonItem *item in self.buttonItems){
-            if ([self isActionSheet] || self.buttonItems.count > 2 || !self.theme.ifTwoBtnsShouldInOneLine) {
-                [item changeToActionSheetButtonStyle:self.theme.themeColor];
-            }
-            AlarmAlertButton *button = [self buttonItem:item];
-            [self.contentView addSubview:button];
+    //adding buttons
+    if (self.buttonItems.count > 0) {
+        //a horizontal line is already needed
+        self.hLine = [self getLineView];
+        [self.contentView addSubview:self.hLine];
+        
+        if ([self isActionSheet]) {
+            [self addButtonsWithActionSheetStyle:YES];
+        }else if (self.buttonItems.count == 1) {
+            [self addButtonsWithActionSheetStyle:NO];
+        }
+        else if ([self twoButtonsInOneLine]) {
+            self.vLine = [self getLineView];
+            [self.contentView addSubview:self.vLine];
+            [self addButtonsWithActionSheetStyle:NO];
+        }else if (self.buttonItems.count > 2){
+            [self addButtonsWithActionSheetStyle:YES];
+        }else{  //two buttons but need to show vertically
+            AlarmAlertButtonItem *firstItem = self.buttonItems[0];
+            if (firstItem.buttonStyle == AlertButtonCancel)
+                self.buttonItems = [NSMutableArray arrayWithArray:[[self.buttonItems reverseObjectEnumerator] allObjects]];
+            [self addButtonsWithActionSheetStyle:YES];
         }
     }
     
@@ -207,7 +216,13 @@
                      [self.contentView addConstraints:[NSLayoutConstraint constraintsWithVisualFormat:@"V:[view(btnHeight)]" options:kNilOptions metrics:btnDict views:NSDictionaryOfVariableBindings(view)]];
                      [button addTarget:self action:@selector(actionButtonPressed:) forControlEvents:UIControlEventTouchUpInside];
                      
-                     if (self.buttonItems.count == 1){
+                     if ([self isActionSheet]) {
+                         //padding to top
+                         [self.contentView addConstraints:[NSLayoutConstraint constraintsWithVisualFormat:@"V:[previousSubView]-(topDownPadding)-[view]" options:kNilOptions metrics:metrics views:NSDictionaryOfVariableBindings(previousSubView,view)]];
+                         
+                         //leftRight
+                         [self.contentView addConstraints:[NSLayoutConstraint constraintsWithVisualFormat:@"H:|-(cLeft)-[view]-(cRight)-|" options:kNilOptions metrics:metrics views:NSDictionaryOfVariableBindings(view)]];
+                     }else if (self.buttonItems.count == 1){
                          NSDictionary *relatedViews = @{@"view":view,
                                                         @"hLine":self.hLine};
                          //padding to top
@@ -215,7 +230,7 @@
                          //leftRight padding
                          [self.contentView addConstraints:[NSLayoutConstraint constraintsWithVisualFormat:@"H:|[view]|" options:kNilOptions metrics:nil views:NSDictionaryOfVariableBindings(view)]];
                      }
-                     else if ([self twoButtonsInOneLine] && ![self isActionSheet]) {
+                     else if ([self twoButtonsInOneLine]) {
                          NSDictionary *relatedViews = @{@"view":view,
                                                         @"hLine":self.hLine,
                                                         @"vLine":self.vLine};
@@ -268,7 +283,17 @@
          }
          
          if (index == self.contentView.subviews.count - 1) {//buttom padding
-             NSDictionary *metrics = @{@"padding":@((self.buttonItems.count > 2 || [self isActionSheet] || !self.theme.ifTwoBtnsShouldInOneLine) ? (self.theme.contentViewInsets.bottom + 0.0f) : 0)};
+             
+             CGFloat buttomPadding;
+             if ([self isActionSheet]) {
+                 buttomPadding = (self.theme.contentViewInsets.bottom + 0.0f);
+             }else if (self.buttonItems.count == 1 || [self twoButtonsInOneLine]) {
+                 buttomPadding = 0;
+             }else{
+                 buttomPadding = (self.theme.contentViewInsets.bottom + 0.0f);
+             }
+             
+             NSDictionary *metrics = @{@"padding":@(buttomPadding)};
              [self.contentView addConstraints:[NSLayoutConstraint constraintsWithVisualFormat:@"V:[view]-(padding)-|" options:kNilOptions metrics:metrics views:NSDictionaryOfVariableBindings(view)]];
          }
          
@@ -282,15 +307,7 @@
     [self.maskView addConstraint:[NSLayoutConstraint constraintWithItem:self.contentView attribute:NSLayoutAttributeHeight relatedBy:NSLayoutRelationLessThanOrEqual toItem:self.maskView attribute:NSLayoutAttributeHeight multiplier:1.0 constant:0]];
     [self.maskView addConstraint:[NSLayoutConstraint constraintWithItem:self.contentView attribute:NSLayoutAttributeWidth relatedBy:NSLayoutRelationLessThanOrEqual toItem:self.maskView attribute:NSLayoutAttributeWidth multiplier:1.0 constant:0]];
     
-    if (self.theme.popupStyle == AAFullscreen) {
-        self.contentViewWidth = [NSLayoutConstraint constraintWithItem:self.contentView attribute:NSLayoutAttributeWidth relatedBy:NSLayoutRelationEqual toItem:self.maskView attribute:NSLayoutAttributeWidth multiplier:IS_IPAD?0.5:1.0 constant:0];
-        [self.maskView addConstraint:self.contentViewWidth];
-        self.contentViewCenterYConstraint = [NSLayoutConstraint constraintWithItem:self.contentView attribute:NSLayoutAttributeCenterY relatedBy:NSLayoutRelationEqual toItem:self.maskView attribute:NSLayoutAttributeCenterY multiplier:1.0 constant:0];
-        [self.maskView addConstraint:self.contentViewCenterYConstraint];
-        self.contentViewCenterXConstraint = [NSLayoutConstraint constraintWithItem:self.contentView attribute:NSLayoutAttributeCenterX relatedBy:NSLayoutRelationEqual toItem:self.maskView attribute:NSLayoutAttributeCenterX multiplier:1.0 constant:0];
-        [self.maskView addConstraint:self.contentViewCenterXConstraint];
-    }
-    else if (self.theme.popupStyle == AAActionSheet) {
+    if (self.theme.popupStyle == AAActionSheet) {
         self.contentViewHeight = [NSLayoutConstraint constraintWithItem:self.contentView attribute:NSLayoutAttributeWidth relatedBy:NSLayoutRelationEqual toItem:self.maskView attribute:NSLayoutAttributeWidth multiplier:IS_IPAD?0.6:1.0 constant:0];
         [self.maskView addConstraint:self.contentViewHeight];
         self.contentViewBottom = [NSLayoutConstraint constraintWithItem:self.contentView attribute:NSLayoutAttributeBottom relatedBy:NSLayoutRelationEqual toItem:self.maskView attribute:NSLayoutAttributeBottom multiplier:1.0 constant:0];
@@ -421,12 +438,32 @@
 
 - (BOOL)twoButtonsInOneLine
 {
-    return self.buttonItems.count == 2 && self.theme.ifTwoBtnsShouldInOneLine? YES : NO;
+    return ![self isActionSheet] && self.buttonItems.count == 2 && self.theme.ifTwoBtnsShouldInOneLine && [self LabelLengthSatisfied]? YES : NO;
+}
+
+- (BOOL)LabelLengthSatisfied
+{
+    for (AlarmAlertButtonItem *item in self.buttonItems){
+        if (item.buttonTitle.string.length >= 14) {
+            return NO;
+        }
+    }
+    return YES;
 }
 
 - (BOOL)isActionSheet
 {
     return self.theme.popupStyle == AAActionSheet? YES : NO;
+}
+
+- (void)addButtonsWithActionSheetStyle:(BOOL)isActionSheetStyle
+{
+    for (AlarmAlertButtonItem *item in self.buttonItems){
+        if (isActionSheetStyle)
+            [item changeToActionSheetButtonStyle:self.theme.themeColor];
+        AlarmAlertButton *button = [self buttonItem:item];
+        [self.contentView addSubview:button];
+    }
 }
 
 - (UILabel *)multilineLabelWithAttributedString:(NSAttributedString *)attributedString
@@ -545,7 +582,7 @@
 - (void)changeToActionSheetButtonStyle:(UIColor *)themeColor
 {
     self.cornerRadius = 3;
-    self.backgroundColor = [themeColor colorWithAlphaComponent:.8];
+    self.backgroundColor = themeColor;
     self.buttonHeight = 45;
     NSAttributedString *buttonString = [AlarmAlertView attributeStringWithTitle:self.buttonTitle.string attributes:@{NSFontAttributeName : [UIFont boldSystemFontOfSize:buttonFontSize], NSForegroundColorAttributeName : [UIColor whiteColor]}];
     self.buttonTitle = buttonString;
