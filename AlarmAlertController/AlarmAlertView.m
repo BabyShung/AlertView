@@ -317,7 +317,7 @@
     }
     else {//centered style
         if (IS_IPAD) {
-            self.contentViewWidth = [NSLayoutConstraint constraintWithItem:self.contentView attribute:NSLayoutAttributeWidth relatedBy:NSLayoutRelationEqual toItem:self.maskView attribute:NSLayoutAttributeWidth multiplier:0.4 constant:0];
+            self.contentViewWidth = [NSLayoutConstraint constraintWithItem:self.contentView attribute:NSLayoutAttributeWidth relatedBy:NSLayoutRelationEqual toItem:self.maskView attribute:NSLayoutAttributeWidth multiplier:0.0 constant:320];
         }else {
             self.contentViewWidth = [NSLayoutConstraint constraintWithItem:self.contentView attribute:NSLayoutAttributeWidth relatedBy:NSLayoutRelationEqual toItem:self.maskView attribute:NSLayoutAttributeWidth multiplier:0.85 constant:0];
         }
@@ -384,10 +384,10 @@
                      }
                      completion:^(BOOL finished) {
                          [self.maskView removeFromSuperview];
-                         self.selfReference = nil;//finally remove self reference
                          if (self.firstResponder && item.buttonStyle == AlertButtonCancel) {
                              [self.firstResponder becomeFirstResponder];
                          }
+                         self.selfReference = nil;//finally remove self reference
                      }];
 }
 
@@ -523,14 +523,17 @@
 {
     if (SYSTEM_VERSION_LESS_THAN(@"7.0"))
         return;
+    
+    NSInteger relativeValue = IS_IPHONE? 12 : 20;
+    
     // Motion effects
     UIInterpolatingMotionEffect *horizontalMotionEffect = [[UIInterpolatingMotionEffect alloc] initWithKeyPath:@"center.x" type:UIInterpolatingMotionEffectTypeTiltAlongHorizontalAxis];
-    horizontalMotionEffect.minimumRelativeValue = @(-12);
-    horizontalMotionEffect.maximumRelativeValue = @(12);
+    horizontalMotionEffect.minimumRelativeValue = @(-relativeValue);
+    horizontalMotionEffect.maximumRelativeValue = @(relativeValue);
     
     UIInterpolatingMotionEffect *verticalMotionEffect = [[UIInterpolatingMotionEffect alloc] initWithKeyPath:@"center.y" type:UIInterpolatingMotionEffectTypeTiltAlongVerticalAxis];
-    verticalMotionEffect.minimumRelativeValue = @(-12);
-    verticalMotionEffect.maximumRelativeValue = @(12);
+    verticalMotionEffect.minimumRelativeValue = @(-relativeValue);
+    verticalMotionEffect.maximumRelativeValue = @(relativeValue);
     
     UIMotionEffectGroup *group = [UIMotionEffectGroup new];
     group.motionEffects = @[horizontalMotionEffect, verticalMotionEffect];
@@ -558,7 +561,7 @@
         self.buttonStyle = style;
         self.cornerRadius = 0;
         self.backgroundColor = [UIColor whiteColor];
-        self.buttonHeight = 48;
+        self.buttonHeight = 47;
         UIColor *buttonTitleColor = color;
         switch (style) {
             case AlertButtonStyleDefault:
@@ -598,12 +601,20 @@
 {
     self = [super init];
     if (self) {
+        CGFloat titleFontSize, messageFontSize;
+        if (IS_IPHONE_5_OR_LESS || IS_IPAD) {
+            titleFontSize = 15.f;
+            messageFontSize = 14.f;
+        } else {
+            titleFontSize = 18.f;
+            messageFontSize = 15.f;
+        }
         self.backgroundColor = [UIColor whiteColor];
         UIColor *color = defaultFontColor;
         self.titleColor = self.messageColor = self.themeColor = color;
         self.cornerRadius = 6.0f;
-        self.titleFontSize = IS_IPHONE_5_OR_LESS? 15.f : 18.f;
-        self.messageFontSize = IS_IPHONE_5_OR_LESS? 14.f : 15.f;
+        self.titleFontSize = titleFontSize;
+        self.messageFontSize = messageFontSize;
         self.ifTwoBtnsShouldInOneLine = YES;
         self.contentViewInsets = UIEdgeInsetsMake(17.0f, 15.0f, 17.0f, 15.0f);
         self.popupStyle = AACentered;
