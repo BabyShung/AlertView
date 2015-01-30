@@ -33,14 +33,12 @@
 
 @property (nonatomic, strong) id firstResponder;
 
-@property (nonatomic, strong) NSString *title;
-@property (nonatomic, strong) NSString *message;
-@property (nonatomic, strong) NSMutableArray *buttonItems;
+@property (nonatomic, strong, readwrite) NSMutableArray *mutableButtonItems;
 
 @property (nonatomic, strong) AlarmAlertView *selfReference;
 @property (nonatomic, strong) UIView *maskView;
 @property (nonatomic, strong) UIView *contentView;
-@property (nonatomic, strong) UIView *KeyView;//alertView show in KeyView
+@property (nonatomic, weak) UIView *KeyView;//alertView show in KeyView
 
 @property (nonatomic, strong) UIView *hLine;
 @property (nonatomic, strong) UIView *vLine;
@@ -83,11 +81,10 @@
     self = [super init];
     if (self) {
         _theme = [[AlarmAlertTheme alloc] initWithDefaultTheme];//init theme first
-        _selfReference = self;//it will be removed when dismissed
         _title = title;
         _message = message;
         _theme.popupStyle = style;
-        _buttonItems = [NSMutableArray array];
+        _mutableButtonItems = [NSMutableArray array];
         self.KeyView = superView;
     }
     return self;
@@ -114,7 +111,14 @@
 {
     AlarmAlertButtonItem *item = [[AlarmAlertButtonItem alloc] initWithTitle:title andButtonTitleColor:color andStyle:style];
     item.selectionHandler = handler;
-    [self.buttonItems addObject:item];
+    [self.mutableButtonItems addObject:item];
+}
+
+#pragma mark - getter
+
+- (NSArray *)buttonItems
+{
+    return self.mutableButtonItems;
 }
 
 #pragma mark - UI & Constraints
@@ -153,26 +157,26 @@
     }
     
     //adding buttons
-    if (self.buttonItems.count > 0) {
+    if (self.mutableButtonItems.count > 0) {
         //a horizontal line is already needed
         self.hLine = [self getLineView];
         [self.contentView addSubview:self.hLine];
         
         if ([self isActionSheet]) {
             [self addButtonsWithActionSheetStyle:YES];
-        }else if (self.buttonItems.count == 1) {
+        }else if (self.mutableButtonItems.count == 1) {
             [self addButtonsWithActionSheetStyle:NO];
         }
         else if ([self twoButtonsInOneLine]) {
             self.vLine = [self getLineView];
             [self.contentView addSubview:self.vLine];
             [self addButtonsWithActionSheetStyle:NO];
-        }else if (self.buttonItems.count > 2){
+        }else if (self.mutableButtonItems.count > 2){
             [self addButtonsWithActionSheetStyle:YES];
         }else{  //two buttons but need to show vertically
-            AlarmAlertButtonItem *firstItem = self.buttonItems[0];
+            AlarmAlertButtonItem *firstItem = self.mutableButtonItems[0];
             if (firstItem.buttonStyle == AlertButtonCancel)
-                self.buttonItems = [NSMutableArray arrayWithArray:[[self.buttonItems reverseObjectEnumerator] allObjects]];
+                self.mutableButtonItems = [NSMutableArray arrayWithArray:[[self.mutableButtonItems reverseObjectEnumerator] allObjects]];
             [self addButtonsWithActionSheetStyle:YES];
         }
     }
@@ -222,7 +226,7 @@
                          
                          //leftRight
                          [self.contentView addConstraints:[NSLayoutConstraint constraintsWithVisualFormat:@"H:|-(cLeft)-[view]-(cRight)-|" options:kNilOptions metrics:metrics views:NSDictionaryOfVariableBindings(view)]];
-                     }else if (self.buttonItems.count == 1){
+                     }else if (self.mutableButtonItems.count == 1){
                          NSDictionary *relatedViews = @{@"view":view,
                                                         @"hLine":self.hLine};
                          //padding to top
@@ -239,7 +243,7 @@
                          [self.contentView addConstraints:[NSLayoutConstraint constraintsWithVisualFormat:@"V:[hLine][view]" options:kNilOptions metrics:nil views:relatedViews]];
                          
                          //leftRight
-                         if (button.item == self.buttonItems[0]) {
+                         if (button.item == self.mutableButtonItems[0]) {
                              [self.contentView addConstraints:[NSLayoutConstraint constraintsWithVisualFormat:@"H:|[view][vLine]" options:kNilOptions metrics:nil views:relatedViews]];
                          }else{
                              [self.contentView addConstraints:[NSLayoutConstraint constraintsWithVisualFormat:@"H:[vLine][view]|" options:kNilOptions metrics:nil views:relatedViews]];
@@ -287,7 +291,7 @@
              CGFloat buttomPadding;
              if ([self isActionSheet]) {
                  buttomPadding = (self.theme.contentViewInsets.bottom + 0.0f);
-             }else if (self.buttonItems.count == 1 || [self twoButtonsInOneLine]) {
+             }else if (self.mutableButtonItems.count == 1 || [self twoButtonsInOneLine]) {
                  buttomPadding = 0;
              }else{
                  buttomPadding = (self.theme.contentViewInsets.bottom + 0.0f);
@@ -338,6 +342,8 @@
 
 - (void)showViewAnimated:(BOOL)flag
 {
+    if (self.maskView)
+        return;
     [self initializeViews];
     [self setOriginConstraints];
     [self.maskView needsUpdateConstraints];
@@ -348,6 +354,8 @@
     self.firstResponder = [self findViewThatIsFirstResponder:self.KeyView];
     //dismiss keyboard
     [self.KeyView endEditing:YES];
+    
+    _selfReference = self;//it will be removed when dismissed
     
     [UIView animateWithDuration:flag ? 0.3f : 0.0f
                           delay:0
@@ -372,6 +380,8 @@
 
 - (void)dismissViewAnimated:(BOOL)flag andSenderItem:(AlarmAlertButtonItem *)item
 {
+    if (!self.maskView)
+        return;
     [self setOriginConstraints];
     
     [UIView animateWithDuration:flag ? 0.3f : 0.0f
@@ -438,12 +448,12 @@
 
 - (BOOL)twoButtonsInOneLine
 {
-    return ![self isActionSheet] && self.buttonItems.count == 2 && self.theme.ifTwoBtnsShouldInOneLine && [self LabelLengthSatisfied]? YES : NO;
+    return ![self isActionSheet] && self.mutableButtonItems.count == 2 && self.theme.ifTwoBtnsShouldInOneLine && [self LabelLengthSatisfied]? YES : NO;
 }
 
 - (BOOL)LabelLengthSatisfied
 {
-    for (AlarmAlertButtonItem *item in self.buttonItems){
+    for (AlarmAlertButtonItem *item in self.mutableButtonItems){
         if (item.buttonTitle.string.length >= 14) {
             return NO;
         }
@@ -458,7 +468,7 @@
 
 - (void)addButtonsWithActionSheetStyle:(BOOL)isActionSheetStyle
 {
-    for (AlarmAlertButtonItem *item in self.buttonItems){
+    for (AlarmAlertButtonItem *item in self.mutableButtonItems){
         if (isActionSheetStyle)
             [item changeToActionSheetButtonStyle:self.theme.themeColor];
         AlarmAlertButton *button = [self buttonItem:item];

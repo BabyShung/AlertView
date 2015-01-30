@@ -15,6 +15,7 @@
 		E6182F2A1A66D78C008AF863 /* LaunchScreen.xib in Resources */ = {isa = PBXBuildFile; fileRef = E6182F281A66D78C008AF863 /* LaunchScreen.xib */; };
 		E6182F361A66D78C008AF863 /* AlarmAlertControllerTests.m in Sources */ = {isa = PBXBuildFile; fileRef = E6182F351A66D78C008AF863 /* AlarmAlertControllerTests.m */; };
 		E6182F411A66D794008AF863 /* AlarmAlertView.m in Sources */ = {isa = PBXBuildFile; fileRef = E6182F401A66D794008AF863 /* AlarmAlertView.m */; };
+		E6D8783C1A7AC3E200DD242B /* AlarmAlertViewTests.m in Sources */ = {isa = PBXBuildFile; fileRef = E6D8783B1A7AC3E200DD242B /* AlarmAlertViewTests.m */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -43,6 +44,7 @@
 		E6182F351A66D78C008AF863 /* AlarmAlertControllerTests.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = AlarmAlertControllerTests.m; sourceTree = "<group>"; };
 		E6182F3F1A66D794008AF863 /* AlarmAlertView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = AlarmAlertView.h; path = AlarmAlertController/AlarmAlertView.h; sourceTree = "<group>"; };
 		E6182F401A66D794008AF863 /* AlarmAlertView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = AlarmAlertView.m; path = AlarmAlertController/AlarmAlertView.m; sourceTree = "<group>"; };
+		E6D8783B1A7AC3E200DD242B /* AlarmAlertViewTests.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = AlarmAlertViewTests.m; path = ../AlarmAlertViewTests.m; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -111,6 +113,7 @@
 			isa = PBXGroup;
 			children = (
 				E6182F351A66D78C008AF863 /* AlarmAlertControllerTests.m */,
+				E6D8783B1A7AC3E200DD242B /* AlarmAlertViewTests.m */,
 				E6182F331A66D78C008AF863 /* Supporting Files */,
 			);
 			path = AlarmAlertControllerTests;
@@ -236,6 +239,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				E6182F361A66D78C008AF863 /* AlarmAlertControllerTests.m in Sources */,
+				E6D8783C1A7AC3E200DD242B /* AlarmAlertViewTests.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -420,6 +424,7 @@
 				E6182F3B1A66D78C008AF863 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
 		};
 		E6182F3C1A66D78C008AF863 /* Build configuration list for PBXNativeTarget "AlarmAlertControllerTests" */ = {
 			isa = XCConfigurationList;
@@ -428,6 +433,7 @@
 				E6182F3E1A66D78C008AF863 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
 	};

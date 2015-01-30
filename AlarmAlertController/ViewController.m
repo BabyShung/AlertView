@@ -28,6 +28,16 @@
         NSLog(@"one button");
     }];
     [al show];
+    [al show];
+    [al show];
+    [al show];
+    
+    
+    NSLog(@"######## %d",(int)al.buttonItems.count);
+    NSLog(@"######## %@",al.buttonItems[0]);
+    AlarmAlertButtonItem *item = (AlarmAlertButtonItem *)al.buttonItems[0];
+    item.backgroundColor = [UIColor orangeColor];
+    NSLog(@"######## %@",item.buttonTitle);
 }
 
 - (IBAction)presentTwoButtons:(id)sender {

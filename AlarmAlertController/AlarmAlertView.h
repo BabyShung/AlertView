@@ -16,7 +16,10 @@ typedef NS_ENUM(NSUInteger, AlarmAlertStyle) {
 
 @interface AlarmAlertView : NSObject
 
-@property (nonatomic, strong) AlarmAlertTheme *theme;
+@property (nonatomic, copy) NSString *title;
+@property (nonatomic, copy) NSString *message;
+@property (nonatomic, readonly) NSArray *buttonItems;
+@property (nonatomic, copy) AlarmAlertTheme *theme;
 
 - (instancetype)initWithTitle:(NSString *)title
                       message:(NSString *)message;
@@ -46,7 +49,7 @@ typedef void(^SelectionHandler) (AlarmAlertButtonItem *item);
 
 @interface AlarmAlertButtonItem : NSObject
 
-@property (nonatomic, strong) NSAttributedString *buttonTitle;
+@property (nonatomic, copy) NSAttributedString *buttonTitle;
 @property (nonatomic, strong) UIColor *backgroundColor;
 @property (nonatomic, strong) UIColor *borderColor;
 @property (nonatomic, assign) CGFloat borderWidth;
