@@ -27,11 +27,35 @@
 
 @end
 
+#pragma mark - UIResponder (FirstResponder)
+
+@interface UIResponder (FirstResponder)
+
++(id)currentFirstResponder;
+
+@end
+
+static __weak id currentFirstResponder;
+
+@implementation UIResponder (FirstResponder)
+
++(id)currentFirstResponder {
+    currentFirstResponder = nil;
+    [[UIApplication sharedApplication] sendAction:@selector(findFirstResponder:) to:nil from:nil forEvent:nil];
+    return currentFirstResponder;
+}
+
+-(void)findFirstResponder:(id)sender {
+    currentFirstResponder = self;
+}
+
+@end
+
 #pragma mark - AlarmAlertView
 
 @interface AlarmAlertView ()
 
-@property (nonatomic, strong) id firstResponder;
+@property (nonatomic, weak) id firstResponder;
 
 @property (nonatomic, strong, readwrite) NSMutableArray *mutableButtonItems;
 
@@ -359,7 +383,7 @@
     [self setPresentedConstraints];
     [self addMotionEffect:self.contentView];
     
-    self.firstResponder = [self findViewThatIsFirstResponder:self.KeyView];
+    self.firstResponder = [UIResponder currentFirstResponder];
     //dismiss keyboard
     [self.KeyView endEditing:YES];
     
@@ -407,19 +431,6 @@
                          }
                          self.selfReference = nil;//finally remove self reference
                      }];
-}
-
-- (UIView *)findViewThatIsFirstResponder:(UIView *)superView
-{
-    if (superView.isFirstResponder)
-        return superView;
-    for (UIView *subView in superView.subviews) {
-        UIView *firstResponder = [self findViewThatIsFirstResponder:subView];
-        if (firstResponder != nil) {
-            return firstResponder;
-        }
-    }
-    return nil;
 }
 
 - (void)setOriginConstraints

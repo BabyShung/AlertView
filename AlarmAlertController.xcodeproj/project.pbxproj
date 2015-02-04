@@ -15,6 +15,7 @@
 		E6182F2A1A66D78C008AF863 /* LaunchScreen.xib in Resources */ = {isa = PBXBuildFile; fileRef = E6182F281A66D78C008AF863 /* LaunchScreen.xib */; };
 		E6182F361A66D78C008AF863 /* AlarmAlertControllerTests.m in Sources */ = {isa = PBXBuildFile; fileRef = E6182F351A66D78C008AF863 /* AlarmAlertControllerTests.m */; };
 		E6182F411A66D794008AF863 /* AlarmAlertView.m in Sources */ = {isa = PBXBuildFile; fileRef = E6182F401A66D794008AF863 /* AlarmAlertView.m */; };
+		E6366C7B1A8295C4009DC337 /* UIResponder+FirstResponder.m in Sources */ = {isa = PBXBuildFile; fileRef = E6366C7A1A8295C4009DC337 /* UIResponder+FirstResponder.m */; };
 		E6D8783C1A7AC3E200DD242B /* AlarmAlertViewTests.m in Sources */ = {isa = PBXBuildFile; fileRef = E6D8783B1A7AC3E200DD242B /* AlarmAlertViewTests.m */; };
 /* End PBXBuildFile section */
 
@@ -44,6 +45,8 @@
 		E6182F351A66D78C008AF863 /* AlarmAlertControllerTests.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = AlarmAlertControllerTests.m; sourceTree = "<group>"; };
 		E6182F3F1A66D794008AF863 /* AlarmAlertView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = AlarmAlertView.h; path = AlarmAlertController/AlarmAlertView.h; sourceTree = "<group>"; };
 		E6182F401A66D794008AF863 /* AlarmAlertView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = AlarmAlertView.m; path = AlarmAlertController/AlarmAlertView.m; sourceTree = "<group>"; };
+		E6366C791A8295C4009DC337 /* UIResponder+FirstResponder.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = "UIResponder+FirstResponder.h"; path = "../UIResponder+FirstResponder.h"; sourceTree = "<group>"; };
+		E6366C7A1A8295C4009DC337 /* UIResponder+FirstResponder.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = "UIResponder+FirstResponder.m"; path = "../UIResponder+FirstResponder.m"; sourceTree = "<group>"; };
 		E6D8783B1A7AC3E200DD242B /* AlarmAlertViewTests.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = AlarmAlertViewTests.m; path = ../AlarmAlertViewTests.m; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
@@ -88,6 +91,8 @@
 		E6182F181A66D78C008AF863 /* AlarmAlertController */ = {
 			isa = PBXGroup;
 			children = (
+				E6366C791A8295C4009DC337 /* UIResponder+FirstResponder.h */,
+				E6366C7A1A8295C4009DC337 /* UIResponder+FirstResponder.m */,
 				E6182F1D1A66D78C008AF863 /* AppDelegate.h */,
 				E6182F1E1A66D78C008AF863 /* AppDelegate.m */,
 				E6182F201A66D78C008AF863 /* ViewController.h */,
@@ -228,6 +233,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				E6182F221A66D78C008AF863 /* ViewController.m in Sources */,
+				E6366C7B1A8295C4009DC337 /* UIResponder+FirstResponder.m in Sources */,
 				E6182F1F1A66D78C008AF863 /* AppDelegate.m in Sources */,
 				E6182F411A66D794008AF863 /* AlarmAlertView.m in Sources */,
 				E6182F1C1A66D78C008AF863 /* main.m in Sources */,
