@@ -60,13 +60,15 @@
 }
 
 - (IBAction)presentTwoButtons3:(id)sender {
-    AlarmAlertView *al = [[AlarmAlertView alloc] initWithTitle:@"Setup Touch ID" message:@"This app now supports Apple's Touch ID feature for quick and secure access to the app using your device's fingerprint reader. Would you like to set it up?"];
-    al.theme.ifTwoBtnsShouldInOneLine = NO;
+    AlarmAlertView *al = [[AlarmAlertView alloc] initWithTitle:@"Setup Touch ID"
+                                                       message:@"This app now supports Apple's Touch ID feature for quick and secure access to the app using your device's fingerprint reader. Would you like to set it up?"];
+    //al.theme.ifTwoBtnsShouldInOneLine = NO;
+    //al.theme.themeColor = [UIColor orangeColor];
     //al.theme.titleFontSize = 15;//you can modify the theme (style of the contentView)
     [al addActionWithTitle:@"Passcode Settings" handler:^(AlarmAlertButtonItem *item) {
         NSLog(@"Cancel");
     }];
-    [al addActionWithTitle:@"Not now" titleColor:[UIColor orangeColor] style:AlertButtonStyleDefault handler:nil];
+    [al addActionWithTitle:@"Not now"];
     [al show];
 }
 

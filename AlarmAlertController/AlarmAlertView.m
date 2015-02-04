@@ -290,11 +290,11 @@
              
              CGFloat buttomPadding;
              if ([self isActionSheet]) {
-                 buttomPadding = (self.theme.contentViewInsets.bottom + 0.0f);
+                 buttomPadding = self.theme.contentViewInsets.bottom;
              }else if (self.mutableButtonItems.count == 1 || [self twoButtonsInOneLine]) {
                  buttomPadding = 0;
              }else{
-                 buttomPadding = (self.theme.contentViewInsets.bottom + 0.0f);
+                 buttomPadding = self.theme.contentViewInsets.bottom;
              }
              
              NSDictionary *metrics = @{@"padding":@(buttomPadding)};
@@ -320,16 +320,24 @@
         [self.maskView addConstraint:self.contentViewCenterXConstraint];
     }
     else {//centered style
-        if (IS_IPAD) {
-            self.contentViewWidth = [NSLayoutConstraint constraintWithItem:self.contentView attribute:NSLayoutAttributeWidth relatedBy:NSLayoutRelationEqual toItem:self.maskView attribute:NSLayoutAttributeWidth multiplier:0.0 constant:320];
-        }else {
-            self.contentViewWidth = [NSLayoutConstraint constraintWithItem:self.contentView attribute:NSLayoutAttributeWidth relatedBy:NSLayoutRelationEqual toItem:self.maskView attribute:NSLayoutAttributeWidth multiplier:0.85 constant:0];
-        }
+        self.contentViewWidth = [NSLayoutConstraint constraintWithItem:self.contentView attribute:NSLayoutAttributeWidth relatedBy:NSLayoutRelationEqual toItem:self.maskView attribute:NSLayoutAttributeWidth multiplier:0.0 constant:[self alertViewWidth]];
+        
         [self.maskView addConstraint:self.contentViewWidth];
         self.contentViewCenterYConstraint = [NSLayoutConstraint constraintWithItem:self.contentView attribute:NSLayoutAttributeCenterY relatedBy:NSLayoutRelationEqual toItem:self.maskView attribute:NSLayoutAttributeCenterY multiplier:1.0 constant:0];
         [self.maskView addConstraint:self.contentViewCenterYConstraint];
         self.contentViewCenterXConstraint = [NSLayoutConstraint constraintWithItem:self.contentView attribute:NSLayoutAttributeCenterX relatedBy:NSLayoutRelationEqual toItem:self.maskView attribute:NSLayoutAttributeCenterX multiplier:1.0 constant:0];
         [self.maskView addConstraint:self.contentViewCenterXConstraint];
+    }
+}
+
+- (CGFloat)alertViewWidth
+{
+    if (IS_IPAD) {
+        return 320;
+    } else if (IS_IPHONE_5_OR_LESS){
+        return 286;
+    } else {
+        return 310;
     }
 }
 
@@ -596,7 +604,7 @@
 {
     self.cornerRadius = 3;
     self.backgroundColor = themeColor;
-    self.buttonHeight = 45;
+    self.buttonHeight = IS_IPHONE_5_OR_LESS? 44 : 45;
     NSAttributedString *buttonString = [AlarmAlertView attributeStringWithTitle:self.buttonTitle.string attributes:@{NSFontAttributeName : [UIFont boldSystemFontOfSize:buttonFontSize], NSForegroundColorAttributeName : [UIColor whiteColor]}];
     self.buttonTitle = buttonString;
 }
@@ -611,24 +619,22 @@
 {
     self = [super init];
     if (self) {
-        CGFloat titleFontSize, messageFontSize;
-        if (IS_IPHONE_5_OR_LESS || IS_IPAD) {
-            titleFontSize = 15.f;
-            messageFontSize = 14.f;
-        } else {
-            titleFontSize = 18.f;
-            messageFontSize = 15.f;
-        }
         self.backgroundColor = [UIColor whiteColor];
         UIColor *color = defaultFontColor;
         self.titleColor = self.messageColor = self.themeColor = color;
         self.cornerRadius = 6.0f;
-        self.titleFontSize = titleFontSize;
-        self.messageFontSize = messageFontSize;
         self.ifTwoBtnsShouldInOneLine = YES;
-        self.contentViewInsets = UIEdgeInsetsMake(17.0f, 15.0f, 17.0f, 15.0f);
-        self.popupStyle = AACentered;
-        self.contentVerticalPadding = 10.0f;
+        if (IS_IPHONE_5_OR_LESS || IS_IPAD) {
+            self.titleFontSize = 15.f;
+            self.messageFontSize = 14.f;
+            self.contentVerticalPadding = 10.0f;
+            self.contentViewInsets = UIEdgeInsetsMake(16.0f, 12.0f, 10.0f, 12.0f);
+        } else {    //iphone 6 or up
+            self.titleFontSize = 18.f;
+            self.messageFontSize = 15.f;
+            self.contentVerticalPadding = 12.0f;
+            self.contentViewInsets = UIEdgeInsetsMake(17.0f, 15.0f, 12.0f, 15.0f);
+        }
     }
     return self;
 }
