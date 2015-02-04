@@ -359,7 +359,7 @@ static __weak id currentFirstResponder;
     if (IS_IPAD) {
         return 320;
     } else if (IS_IPHONE_5_OR_LESS){
-        return 286;
+        return 272;
     } else {
         return 310;
     }
@@ -639,7 +639,7 @@ static __weak id currentFirstResponder;
             self.titleFontSize = 15.f;
             self.messageFontSize = 14.f;
             self.contentVerticalPadding = 10.0f;
-            self.contentViewInsets = UIEdgeInsetsMake(16.0f, 12.0f, 10.0f, 12.0f);
+            self.contentViewInsets = UIEdgeInsetsMake(16.0f, 16.0f, 10.0f, 16.0f);
         } else {    //iphone 6 or up
             self.titleFontSize = 18.f;
             self.messageFontSize = 15.f;
