@@ -8,6 +8,7 @@
 
 #import "ViewController.h"
 #import "AlarmAlertView.h"
+#import "CheckBoxAlertView.h"
 
 @interface ViewController ()
 
@@ -133,6 +134,14 @@
 //    
 //    [al addAction:myItem andTarget:self andSelector:@selector(myActionButtonPressed:)];
 //    [al show];
+    
+    CheckBoxAlertView *cl = [[CheckBoxAlertView alloc] initWithTitle:@"hh" message:nil checkItems:@[@"aa",@"bb",@"cc"] preferredStyle:AACentered subViewOfView:nil];
+    
+    [cl addActionWithTitle:@"Cancel" handler:^(AlarmAlertButtonItem *item) {
+        NSLog(@"Option1");
+    }];
+    [cl addActionWithTitle:@"Send"];
+    [cl show];
 }
 
 
