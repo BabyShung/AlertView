@@ -177,6 +177,20 @@
                                     <action selector="presentActionSheetOneButton:" destination="BYZ-38-t0r" eventType="touchUpInside" id="gdw-7e-POs"/>
                                 </connections>
                             </button>
+                            <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="Zwl-hc-cle">
+                                <rect key="frame" x="378" y="344" width="84" height="60"/>
+                                <color key="backgroundColor" red="0.84313732389999996" green="0.0078431377190000002" blue="0.1764705926" alpha="1" colorSpace="deviceRGB"/>
+                                <constraints>
+                                    <constraint firstAttribute="height" constant="60" id="7w4-3p-M8M"/>
+                                    <constraint firstAttribute="width" constant="84" id="995-sc-tXI"/>
+                                </constraints>
+                                <state key="normal" title="customView">
+                                    <color key="titleShadowColor" white="0.5" alpha="1" colorSpace="calibratedWhite"/>
+                                </state>
+                                <connections>
+                                    <action selector="addingCustomView:" destination="BYZ-38-t0r" eventType="touchUpInside" id="NlT-Zd-hMT"/>
+                                </connections>
+                            </button>
                         </subviews>
                         <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="calibratedWhite"/>
                         <constraints>
@@ -187,9 +201,11 @@
                             <constraint firstItem="7ke-Db-5Hs" firstAttribute="top" secondItem="y3c-jy-aDJ" secondAttribute="bottom" constant="136" id="D2d-Wq-PyB"/>
                             <constraint firstItem="Q0I-V8-EqZ" firstAttribute="centerX" secondItem="hCM-gw-QxK" secondAttribute="centerX" id="HkC-I3-cDc"/>
                             <constraint firstItem="Q0I-V8-EqZ" firstAttribute="top" secondItem="hCM-gw-QxK" secondAttribute="bottom" constant="30" id="IdN-Ha-ojU"/>
+                            <constraint firstItem="Zwl-hc-cle" firstAttribute="top" secondItem="tlk-gM-jpg" secondAttribute="bottom" constant="38" id="JyR-MX-LAR"/>
                             <constraint firstAttribute="centerX" secondItem="uoz-58-DNv" secondAttribute="centerX" id="Kfw-4C-IW4"/>
                             <constraint firstItem="aYi-GK-aWk" firstAttribute="top" secondItem="uoz-58-DNv" secondAttribute="bottom" constant="16" id="OkX-wa-pGO"/>
                             <constraint firstAttribute="centerX" secondItem="hCM-gw-QxK" secondAttribute="centerX" id="QR7-6T-0j6"/>
+                            <constraint firstItem="Zwl-hc-cle" firstAttribute="leading" secondItem="uoz-58-DNv" secondAttribute="trailing" constant="28" id="REZ-6P-ogh"/>
                             <constraint firstAttribute="centerX" secondItem="Q0I-V8-EqZ" secondAttribute="centerX" id="SGL-KQ-1dc"/>
                             <constraint firstItem="vGg-wI-hsa" firstAttribute="top" secondItem="y3c-jy-aDJ" secondAttribute="bottom" id="X4X-2P-aZ5"/>
                             <constraint firstItem="uoz-58-DNv" firstAttribute="top" secondItem="Q0I-V8-EqZ" secondAttribute="bottom" constant="31" id="Xb9-Ip-mbk"/>

@@ -109,8 +109,36 @@
     [al show];
 }
 
+- (IBAction)addingCustomView:(id)sender {
+    UIView *cView = [[UIView alloc] init];
+    cView.translatesAutoresizingMaskIntoConstraints = NO;
+    cView.backgroundColor = [UIColor orangeColor];
+    [cView addConstraints:[NSLayoutConstraint constraintsWithVisualFormat:@"V:[cView(300)]" options:kNilOptions metrics:nil views:NSDictionaryOfVariableBindings(cView)]];
+    
+    AlarmAlertView *al = [[AlarmAlertView alloc] initWithTitle:@"Custom" message:@"View" customView:cView preferredStyle:AACentered subViewOfView:nil];
+    al.theme.themeColor = [UIColor blueColor];
+    [al addActionWithTitle:@"Cancel" handler:^(AlarmAlertButtonItem *item) {
+        NSLog(@"Option1");
+    }];
+    [al addActionWithTitle:@"Send"];
+    [al show];
+}
+
 - (IBAction)appleDefault:(id)sender {
     UIAlertView *al = [[UIAlertView alloc] initWithTitle:@"Title" message:@"Message" delegate:nil cancelButtonTitle:@"Cancel" otherButtonTitles:@"OptionCancelCancelCancelCancelCancelCancelCancelCancelCancelCancelCancelCancelCancelCancel",@"Option",@"Option",@"Option",@"Option",@"Option",@"Option",@"Option",@"Option",nil];
     [al show];
 }
+
+#pragma mark - helper
+
+- (UILabel *)multilineLabelWithAttributedString:(NSAttributedString *)attributedString
+{
+    UILabel *label = [[UILabel alloc] init];
+    [label setTranslatesAutoresizingMaskIntoConstraints:NO];
+    [label setAttributedText:attributedString];
+    [label setNumberOfLines:0];
+    return label;
+}
+
+
 @end

@@ -33,12 +33,18 @@ typedef NS_ENUM(NSUInteger, AlarmAlertStyle) {
                       message:(NSString *)message
                preferredStyle:(AlarmAlertStyle)style
                 subViewOfView:(UIView *)superView;
+- (instancetype)initWithTitle:(NSString *)title
+                      message:(NSString *)message
+                   customView:(UIView *)customView
+               preferredStyle:(AlarmAlertStyle)style
+                subViewOfView:(UIView *)superView;
 
 //adding buttons (similar to UIAlertController)
 - (void)addActionWithTitle:(NSString *)title;
 - (void)addActionWithTitle:(NSString *)title handler:(void (^)(AlarmAlertButtonItem *item))handler;
 - (void)addActionWithTitle:(NSString *)title style:(AlertButtonStyle)style handler:(void (^)(AlarmAlertButtonItem *item))handler;
 - (void)addActionWithTitle:(NSString *)title titleColor:(UIColor *)color style:(AlertButtonStyle)style handler:(void (^)(AlarmAlertButtonItem *item))handler;
+- (void)addAction:(AlarmAlertButtonItem *)item;
 
 - (void)show;
 - (void)dismiss;
@@ -55,8 +61,8 @@ typedef void(^SelectionHandler) (AlarmAlertButtonItem *item);
 @property (nonatomic, assign) CGFloat borderWidth;
 @property (nonatomic, assign) CGFloat cornerRadius;
 @property (nonatomic, assign) CGFloat buttonHeight;
-@property (nonatomic, strong) SelectionHandler selectionHandler;
 @property (nonatomic) AlertButtonStyle buttonStyle;
+@property (nonatomic) SEL selector;
 
 - (instancetype)initWithTitle:(NSString *)title andButtonTitleColor:(UIColor *)color andStyle:(AlertButtonStyle)style;
 - (void)changeToActionSheetButtonStyle:(UIColor *)themeColor;
@@ -78,5 +84,11 @@ typedef void(^SelectionHandler) (AlarmAlertButtonItem *item);
 @property (nonatomic, assign) CGFloat contentVerticalPadding; // Spacing between each vertical element
 
 - (instancetype)initWithDefaultTheme;
+
+@end
+
+@interface AlarmAlertButton : UIButton
+
+- (instancetype)initWithButtonItem:(AlarmAlertButtonItem *)item;
 
 @end

@@ -17,13 +17,111 @@
 
 #pragma mark - AlarmAlertButton
 
-@interface AlarmAlertButton : UIButton
+@interface AlarmAlertButton ()
 
 @property (nonatomic, strong) AlarmAlertButtonItem *item;
 
 @end
 
 @implementation AlarmAlertButton
+
+- (instancetype)initWithButtonItem:(AlarmAlertButtonItem *)item
+{
+    if (self = [super init]) {
+        [self addTarget:self action:item.selector forControlEvents:UIControlEventTouchUpInside];
+        [self setTranslatesAutoresizingMaskIntoConstraints:NO];
+        [self setAttributedTitle:item.buttonTitle forState:UIControlStateNormal];
+        NSAttributedString *alphaString = [self attributedStringChangeColorAlpha:item.buttonTitle];
+        [self setAttributedTitle:alphaString forState:UIControlStateHighlighted];
+        [self setBackgroundColor:item.backgroundColor];
+        self.titleLabel.adjustsFontSizeToFitWidth = TRUE;
+        [self.titleLabel setMinimumScaleFactor:.5];
+        [self.layer setCornerRadius:item.cornerRadius];
+        [self.layer setBorderColor:item.borderColor.CGColor];
+        [self.layer setBorderWidth:item.borderWidth];
+        self.item = item;
+    }
+    
+    return self;
+}
+
++ (NSAttributedString *)attributeStringWithTitle:(NSString *)title attributes:(NSDictionary *)dict
+{
+    NSMutableParagraphStyle *paragraphStyle = NSMutableParagraphStyle.new;
+    paragraphStyle.lineBreakMode = NSLineBreakByWordWrapping;
+    paragraphStyle.alignment = NSTextAlignmentCenter;
+    NSMutableDictionary *finalDict = [[NSMutableDictionary alloc] init];
+    [finalDict addEntriesFromDictionary:dict];
+    [finalDict setObject:paragraphStyle forKey:NSParagraphStyleAttributeName];
+    NSAttributedString *result = [[NSAttributedString alloc] initWithString:title attributes:finalDict];
+    return result;
+}
+
+- (NSAttributedString*) attributedStringChangeColorAlpha:(NSAttributedString *)string
+{
+    NSMutableAttributedString* attributedString = [string mutableCopy];
+    {
+        [attributedString beginEditing];
+        [attributedString enumerateAttribute:NSForegroundColorAttributeName inRange:NSMakeRange(0, attributedString.length) options:0 usingBlock:^(id value, NSRange range, BOOL *stop) {
+            UIColor* alphaColor = value;
+            UIColor *final = [alphaColor colorWithAlphaComponent:0.7];
+            [attributedString removeAttribute:NSForegroundColorAttributeName range:range];
+            [attributedString addAttribute:NSForegroundColorAttributeName value:final range:range];
+        }];        [attributedString endEditing];
+    }
+    return [attributedString copy];
+}
+
+@end
+
+#pragma mark - AlarmAlertButtonItem
+
+@interface AlarmAlertButtonItem ()
+
+@property (nonatomic, strong) SelectionHandler selectionHandler;//should not be inherited
+
+@end
+
+@implementation AlarmAlertButtonItem
+
+- (instancetype)initWithTitle:(NSString *)title andButtonTitleColor:(UIColor *)color andStyle:(AlertButtonStyle)style
+{
+    self = [super init];
+    if (self) {
+        self.buttonStyle = style;
+        self.cornerRadius = 0;
+        self.backgroundColor = [UIColor whiteColor];
+        self.buttonHeight = 47;
+        UIColor *buttonTitleColor = color;
+        switch (style) {
+            case AlertButtonStyleDefault:
+                //do nothing
+                break;
+            case AlertButtonCancel:
+                buttonTitleColor = defaultFontColor;
+                break;
+            case AlertButtonDestructive:
+                self.backgroundColor = [UIColor redColor];
+                break;
+            default:
+                break;
+        }
+        
+        self.buttonTitle = [AlarmAlertButton attributeStringWithTitle:title attributes:@{NSFontAttributeName : [UIFont boldSystemFontOfSize:buttonFontSize], NSForegroundColorAttributeName : buttonTitleColor}];
+    }
+    return self;
+}
+
+- (void)changeToActionSheetButtonStyle:(UIColor *)themeColor
+{
+    self.cornerRadius = 3;
+    self.backgroundColor = themeColor;
+    self.buttonHeight = IS_IPHONE_5_OR_LESS? 44 : 45;
+    NSAttributedString *buttonString = [AlarmAlertButton attributeStringWithTitle:self.buttonTitle.string attributes:@{NSFontAttributeName : [UIFont boldSystemFontOfSize:buttonFontSize], NSForegroundColorAttributeName : [UIColor whiteColor]}];
+    self.buttonTitle = buttonString;
+}
+
+
 
 @end
 
@@ -61,6 +159,7 @@ static __weak id currentFirstResponder;
 
 @property (nonatomic, strong) AlarmAlertView *selfReference;
 @property (nonatomic, strong) UIView *maskView;
+@property (nonatomic, strong) UIView *customView;
 @property (nonatomic, strong) UIView *contentView;
 @property (nonatomic, weak) UIView *KeyView;//alertView show in KeyView
 
@@ -102,11 +201,20 @@ static __weak id currentFirstResponder;
                preferredStyle:(AlarmAlertStyle)style
                 subViewOfView:(UIView *)superView
 {
-    self = [super init];
-    if (self) {
+    return [self initWithTitle:title message:message customView:nil preferredStyle:style subViewOfView:superView];
+}
+
+- (instancetype)initWithTitle:(NSString *)title
+                      message:(NSString *)message
+                   customView:(UIView *)customView
+               preferredStyle:(AlarmAlertStyle)style
+                subViewOfView:(UIView *)superView
+{
+    if (self = [super init]) {
         _theme = [[AlarmAlertTheme alloc] initWithDefaultTheme];//init theme first
         _title = title;
         _message = message;
+        _customView = customView;
         _theme.popupStyle = style;
         _mutableButtonItems = [NSMutableArray array];
         self.KeyView = superView;
@@ -135,6 +243,12 @@ static __weak id currentFirstResponder;
 {
     AlarmAlertButtonItem *item = [[AlarmAlertButtonItem alloc] initWithTitle:title andButtonTitleColor:color andStyle:style];
     item.selectionHandler = handler;
+    item.selector = @selector(actionButtonPressed:);
+    [self.mutableButtonItems addObject:item];
+}
+
+- (void)addAction:(AlarmAlertButtonItem *)item
+{
     [self.mutableButtonItems addObject:item];
 }
 
@@ -168,16 +282,21 @@ static __weak id currentFirstResponder;
     
     //adding title label
     if (self.title) {
-        NSAttributedString *aTitle = [AlarmAlertView attributeStringWithTitle:self.title attributes:@{NSFontAttributeName : [UIFont boldSystemFontOfSize:self.theme.titleFontSize], NSForegroundColorAttributeName : self.theme.titleColor}];
+        NSAttributedString *aTitle = [AlarmAlertButton attributeStringWithTitle:self.title attributes:@{NSFontAttributeName : [UIFont boldSystemFontOfSize:self.theme.titleFontSize], NSForegroundColorAttributeName : self.theme.titleColor}];
         UILabel *title = [self multilineLabelWithAttributedString:aTitle];
         [self.contentView addSubview:title];
     }
     
     //adding msg label
     if (self.message) {
-        NSAttributedString *aMessage = [AlarmAlertView attributeStringWithTitle:self.message attributes:@{NSFontAttributeName : [UIFont systemFontOfSize:self.theme.messageFontSize], NSForegroundColorAttributeName : self.theme.messageColor}];
+        NSAttributedString *aMessage = [AlarmAlertButton attributeStringWithTitle:self.message attributes:@{NSFontAttributeName : [UIFont systemFontOfSize:self.theme.messageFontSize], NSForegroundColorAttributeName : self.theme.messageColor}];
         UILabel *label = [self multilineLabelWithAttributedString:aMessage];
         [self.contentView addSubview:label];
+    }
+    
+    //adding custom view (can be used for subclass)
+    if (self.customView) {
+        [self.contentView addSubview:self.customView];
     }
     
     //adding buttons
@@ -242,7 +361,6 @@ static __weak id currentFirstResponder;
                      
                      //height
                      [self.contentView addConstraints:[NSLayoutConstraint constraintsWithVisualFormat:@"V:[view(btnHeight)]" options:kNilOptions metrics:btnDict views:NSDictionaryOfVariableBindings(view)]];
-                     [button addTarget:self action:@selector(actionButtonPressed:) forControlEvents:UIControlEventTouchUpInside];
                      
                      if ([self isActionSheet]) {
                          //padding to top
@@ -306,6 +424,12 @@ static __weak id currentFirstResponder;
                      [self.contentView addConstraints:[NSLayoutConstraint constraintsWithVisualFormat:@"H:[view(0.5)]" options:kNilOptions metrics:nil views:NSDictionaryOfVariableBindings(view)]];
                      //to contentView bottom
                      [self.contentView addConstraints:[NSLayoutConstraint constraintsWithVisualFormat:@"V:[view]|" options:kNilOptions metrics:nil views:NSDictionaryOfVariableBindings(view)]];
+                 }else if (view == self.customView){
+                     //padding to top
+                     [self.contentView addConstraints:[NSLayoutConstraint constraintsWithVisualFormat:@"V:[previousSubView]-(topDownPadding)-[view]" options:kNilOptions metrics:metrics views:NSDictionaryOfVariableBindings(previousSubView,view)]];
+                     //leftRight padding
+                     [self.contentView addConstraints:[NSLayoutConstraint constraintsWithVisualFormat:@"H:|[view]|" options:kNilOptions metrics:metrics views:NSDictionaryOfVariableBindings(view)]];
+                     
                  }
              }
          }
@@ -490,7 +614,7 @@ static __weak id currentFirstResponder;
     for (AlarmAlertButtonItem *item in self.mutableButtonItems){
         if (isActionSheetStyle)
             [item changeToActionSheetButtonStyle:self.theme.themeColor];
-        AlarmAlertButton *button = [self buttonItem:item];
+        AlarmAlertButton *button = [[AlarmAlertButton alloc] initWithButtonItem:item];
         [self.contentView addSubview:button];
     }
 }
@@ -502,50 +626,6 @@ static __weak id currentFirstResponder;
     [label setAttributedText:attributedString];
     [label setNumberOfLines:0];
     return label;
-}
-
-- (AlarmAlertButton *)buttonItem:(AlarmAlertButtonItem *)item
-{
-    AlarmAlertButton *button = [[AlarmAlertButton alloc] init];
-    [button setTranslatesAutoresizingMaskIntoConstraints:NO];
-    [button setAttributedTitle:item.buttonTitle forState:UIControlStateNormal];
-    NSAttributedString *alphaString = [self attributedStringChangeColorAlpha:item.buttonTitle];
-    [button setAttributedTitle:alphaString forState:UIControlStateHighlighted];
-    [button setBackgroundColor:item.backgroundColor];
-    button.titleLabel.adjustsFontSizeToFitWidth = TRUE;
-    [button.titleLabel setMinimumScaleFactor:.5];
-    [button.layer setCornerRadius:item.cornerRadius];
-    [button.layer setBorderColor:item.borderColor.CGColor];
-    [button.layer setBorderWidth:item.borderWidth];
-    button.item = item;
-    return button;
-}
-
-- (NSAttributedString*) attributedStringChangeColorAlpha:(NSAttributedString *)string
-{
-    NSMutableAttributedString* attributedString = [string mutableCopy];
-    {
-        [attributedString beginEditing];
-        [attributedString enumerateAttribute:NSForegroundColorAttributeName inRange:NSMakeRange(0, attributedString.length) options:0 usingBlock:^(id value, NSRange range, BOOL *stop) {
-            UIColor* alphaColor = value;
-            UIColor *final = [alphaColor colorWithAlphaComponent:0.7];
-            [attributedString removeAttribute:NSForegroundColorAttributeName range:range];
-            [attributedString addAttribute:NSForegroundColorAttributeName value:final range:range];
-        }];        [attributedString endEditing];
-    }
-    return [attributedString copy];
-}
-
-+ (NSAttributedString *)attributeStringWithTitle:(NSString *)title attributes:(NSDictionary *)dict
-{
-    NSMutableParagraphStyle *paragraphStyle = NSMutableParagraphStyle.new;
-    paragraphStyle.lineBreakMode = NSLineBreakByWordWrapping;
-    paragraphStyle.alignment = NSTextAlignmentCenter;
-    NSMutableDictionary *finalDict = [[NSMutableDictionary alloc] init];
-    [finalDict addEntriesFromDictionary:dict];
-    [finalDict setObject:paragraphStyle forKey:NSParagraphStyleAttributeName];
-    NSAttributedString *result = [[NSAttributedString alloc] initWithString:title attributes:finalDict];
-    return result;
 }
 
 - (void)addMotionEffect:(UIView *)view
@@ -575,49 +655,6 @@ static __weak id currentFirstResponder;
     [view setTranslatesAutoresizingMaskIntoConstraints:NO];
     view.backgroundColor = [UIColor colorWithRed:0.824 green:0.827 blue:0.831 alpha:1.000];
     return view;
-}
-
-@end
-
-#pragma mark - AlarmAlertButtonItem
-
-@implementation AlarmAlertButtonItem
-
-- (instancetype)initWithTitle:(NSString *)title andButtonTitleColor:(UIColor *)color andStyle:(AlertButtonStyle)style
-{
-    self = [super init];
-    if (self) {
-        self.buttonStyle = style;
-        self.cornerRadius = 0;
-        self.backgroundColor = [UIColor whiteColor];
-        self.buttonHeight = 47;
-        UIColor *buttonTitleColor = color;
-        switch (style) {
-            case AlertButtonStyleDefault:
-                //do nothing
-                break;
-            case AlertButtonCancel:
-                buttonTitleColor = defaultFontColor;
-                break;
-            case AlertButtonDestructive:
-                self.backgroundColor = [UIColor redColor];
-                break;
-            default:
-                break;
-        }
-        
-        self.buttonTitle = [AlarmAlertView attributeStringWithTitle:title attributes:@{NSFontAttributeName : [UIFont boldSystemFontOfSize:buttonFontSize], NSForegroundColorAttributeName : buttonTitleColor}];
-    }
-    return self;
-}
-
-- (void)changeToActionSheetButtonStyle:(UIColor *)themeColor
-{
-    self.cornerRadius = 3;
-    self.backgroundColor = themeColor;
-    self.buttonHeight = IS_IPHONE_5_OR_LESS? 44 : 45;
-    NSAttributedString *buttonString = [AlarmAlertView attributeStringWithTitle:self.buttonTitle.string attributes:@{NSFontAttributeName : [UIFont boldSystemFontOfSize:buttonFontSize], NSForegroundColorAttributeName : [UIColor whiteColor]}];
-    self.buttonTitle = buttonString;
 }
 
 @end
