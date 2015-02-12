@@ -124,6 +124,18 @@
     [al show];
 }
 
+- (IBAction)customAction:(id)sender
+{
+//    AlarmAlertView *al = [[AlarmAlertView alloc] initWithTitle:@"Title" message:@"Message" preferredStyle:AAActionSheet];
+//    al.theme.themeColor = [UIColor purpleColor];
+//    
+//    AlarmAlertButtonItem *myItem = [[AlarmAlertButtonItem alloc] initWithTitle:@"CustomBtn" andButtonTitleColor:[UIColor greenColor] andStyle:AlertButtonCancel];
+//    
+//    [al addAction:myItem andTarget:self andSelector:@selector(myActionButtonPressed:)];
+//    [al show];
+}
+
+
 - (IBAction)appleDefault:(id)sender {
     UIAlertView *al = [[UIAlertView alloc] initWithTitle:@"Title" message:@"Message" delegate:nil cancelButtonTitle:@"Cancel" otherButtonTitles:@"OptionCancelCancelCancelCancelCancelCancelCancelCancelCancelCancelCancelCancelCancelCancel",@"Option",@"Option",@"Option",@"Option",@"Option",@"Option",@"Option",@"Option",nil];
     [al show];
