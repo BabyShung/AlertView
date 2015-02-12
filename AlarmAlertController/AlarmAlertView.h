@@ -33,6 +33,11 @@ typedef NS_ENUM(NSUInteger, AlarmAlertStyle) {
                       message:(NSString *)message
                preferredStyle:(AlarmAlertStyle)style
                 subViewOfView:(UIView *)superView;
+- (instancetype)initWithTitle:(NSString *)title
+                      message:(NSString *)message
+                   customView:(UIView *)customView
+               preferredStyle:(AlarmAlertStyle)style
+                subViewOfView:(UIView *)superView;
 
 //adding buttons (similar to UIAlertController)
 - (void)addActionWithTitle:(NSString *)title;

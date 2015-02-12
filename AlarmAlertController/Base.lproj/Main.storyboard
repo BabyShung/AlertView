@@ -177,6 +177,20 @@
                                     <action selector="presentActionSheetOneButton:" destination="BYZ-38-t0r" eventType="touchUpInside" id="gdw-7e-POs"/>
                                 </connections>
                             </button>
+                            <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="lzu-vr-ibF">
+                                <rect key="frame" x="131" y="241" width="86" height="56"/>
+                                <color key="backgroundColor" red="0.20072992149999999" green="0.20072992149999999" blue="0.52194695719999995" alpha="1" colorSpace="calibratedRGB"/>
+                                <constraints>
+                                    <constraint firstAttribute="height" constant="56" id="ejS-qG-v1K"/>
+                                    <constraint firstAttribute="width" constant="86" id="qzN-Ap-kGt"/>
+                                </constraints>
+                                <state key="normal" title="CustomView">
+                                    <color key="titleShadowColor" white="0.5" alpha="1" colorSpace="calibratedWhite"/>
+                                </state>
+                                <connections>
+                                    <action selector="addCustomView:" destination="BYZ-38-t0r" eventType="touchUpInside" id="irW-hD-kEL"/>
+                                </connections>
+                            </button>
                         </subviews>
                         <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="calibratedWhite"/>
                         <constraints>
@@ -188,6 +202,7 @@
                             <constraint firstItem="Q0I-V8-EqZ" firstAttribute="centerX" secondItem="hCM-gw-QxK" secondAttribute="centerX" id="HkC-I3-cDc"/>
                             <constraint firstItem="Q0I-V8-EqZ" firstAttribute="top" secondItem="hCM-gw-QxK" secondAttribute="bottom" constant="30" id="IdN-Ha-ojU"/>
                             <constraint firstAttribute="centerX" secondItem="uoz-58-DNv" secondAttribute="centerX" id="Kfw-4C-IW4"/>
+                            <constraint firstItem="lzu-vr-ibF" firstAttribute="top" secondItem="tTX-x5-p4y" secondAttribute="bottom" constant="25" id="L7W-hk-g8h"/>
                             <constraint firstItem="aYi-GK-aWk" firstAttribute="top" secondItem="uoz-58-DNv" secondAttribute="bottom" constant="16" id="OkX-wa-pGO"/>
                             <constraint firstAttribute="centerX" secondItem="hCM-gw-QxK" secondAttribute="centerX" id="QR7-6T-0j6"/>
                             <constraint firstAttribute="centerX" secondItem="Q0I-V8-EqZ" secondAttribute="centerX" id="SGL-KQ-1dc"/>
@@ -211,6 +226,7 @@
                             <constraint firstItem="tlk-gM-jpg" firstAttribute="top" secondItem="7ke-Db-5Hs" secondAttribute="bottom" constant="30" id="sEm-J8-Bgm"/>
                             <constraint firstItem="tlk-gM-jpg" firstAttribute="leading" secondItem="Q0I-V8-EqZ" secondAttribute="trailing" constant="28" id="uVY-Cy-tRl"/>
                             <constraint firstItem="wfy-db-euE" firstAttribute="top" secondItem="aYi-GK-aWk" secondAttribute="bottom" constant="165" id="vD1-OX-hE3"/>
+                            <constraint firstItem="Q0I-V8-EqZ" firstAttribute="leading" secondItem="lzu-vr-ibF" secondAttribute="trailing" constant="33" id="ved-yl-QgN"/>
                             <constraint firstAttribute="centerY" secondItem="hCM-gw-QxK" secondAttribute="centerY" id="zIU-tD-fJH"/>
                         </constraints>
                         <variation key="default">

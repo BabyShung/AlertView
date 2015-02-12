@@ -61,6 +61,7 @@ static __weak id currentFirstResponder;
 
 @property (nonatomic, strong) AlarmAlertView *selfReference;
 @property (nonatomic, strong) UIView *maskView;
+@property (nonatomic, strong) UIView *customView;
 @property (nonatomic, strong) UIView *contentView;
 @property (nonatomic, weak) UIView *KeyView;//alertView show in KeyView
 
@@ -102,11 +103,20 @@ static __weak id currentFirstResponder;
                preferredStyle:(AlarmAlertStyle)style
                 subViewOfView:(UIView *)superView
 {
-    self = [super init];
-    if (self) {
+    return [self initWithTitle:title message:message customView:nil preferredStyle:AACentered subViewOfView:superView];
+}
+
+- (instancetype)initWithTitle:(NSString *)title
+                      message:(NSString *)message
+                   customView:(UIView *)customView
+               preferredStyle:(AlarmAlertStyle)style
+                subViewOfView:(UIView *)superView
+{
+    if (self = [super init]) {
         _theme = [[AlarmAlertTheme alloc] initWithDefaultTheme];//init theme first
         _title = title;
         _message = message;
+        _customView = customView;
         _theme.popupStyle = style;
         _mutableButtonItems = [NSMutableArray array];
         self.KeyView = superView;
@@ -180,6 +190,11 @@ static __weak id currentFirstResponder;
         [self.contentView addSubview:label];
     }
     
+    //adding custom view (can be used for subclass)
+    if (self.customView) {
+        [self.contentView addSubview:self.customView];
+    }
+    
     //adding buttons
     if (self.mutableButtonItems.count > 0) {
         //a horizontal line is already needed
@@ -242,7 +257,6 @@ static __weak id currentFirstResponder;
                      
                      //height
                      [self.contentView addConstraints:[NSLayoutConstraint constraintsWithVisualFormat:@"V:[view(btnHeight)]" options:kNilOptions metrics:btnDict views:NSDictionaryOfVariableBindings(view)]];
-                     [button addTarget:self action:@selector(actionButtonPressed:) forControlEvents:UIControlEventTouchUpInside];
                      
                      if ([self isActionSheet]) {
                          //padding to top
@@ -306,6 +320,11 @@ static __weak id currentFirstResponder;
                      [self.contentView addConstraints:[NSLayoutConstraint constraintsWithVisualFormat:@"H:[view(0.5)]" options:kNilOptions metrics:nil views:NSDictionaryOfVariableBindings(view)]];
                      //to contentView bottom
                      [self.contentView addConstraints:[NSLayoutConstraint constraintsWithVisualFormat:@"V:[view]|" options:kNilOptions metrics:nil views:NSDictionaryOfVariableBindings(view)]];
+                 }else if (view == self.customView){
+                     //padding to top
+                     [self.contentView addConstraints:[NSLayoutConstraint constraintsWithVisualFormat:@"V:[previousSubView]-(topDownPadding)-[view]" options:kNilOptions metrics:metrics views:NSDictionaryOfVariableBindings(previousSubView,view)]];
+                     //leftRight padding
+                     [self.contentView addConstraints:[NSLayoutConstraint constraintsWithVisualFormat:@"H:|[view]|" options:kNilOptions metrics:metrics views:NSDictionaryOfVariableBindings(view)]];
                  }
              }
          }
@@ -517,6 +536,7 @@ static __weak id currentFirstResponder;
     [button.layer setCornerRadius:item.cornerRadius];
     [button.layer setBorderColor:item.borderColor.CGColor];
     [button.layer setBorderWidth:item.borderWidth];
+    [button addTarget:self action:@selector(actionButtonPressed:) forControlEvents:UIControlEventTouchUpInside];
     button.item = item;
     return button;
 }
