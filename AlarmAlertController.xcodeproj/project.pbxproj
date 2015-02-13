@@ -16,7 +16,6 @@
 		E6182F361A66D78C008AF863 /* AlarmAlertControllerTests.m in Sources */ = {isa = PBXBuildFile; fileRef = E6182F351A66D78C008AF863 /* AlarmAlertControllerTests.m */; };
 		E6182F411A66D794008AF863 /* AlarmAlertView.m in Sources */ = {isa = PBXBuildFile; fileRef = E6182F401A66D794008AF863 /* AlarmAlertView.m */; };
 		E6366C7B1A8295C4009DC337 /* UIResponder+FirstResponder.m in Sources */ = {isa = PBXBuildFile; fileRef = E6366C7A1A8295C4009DC337 /* UIResponder+FirstResponder.m */; };
-		E6D7627B1A8D0B8200C0762A /* CheckBoxAlertView.m in Sources */ = {isa = PBXBuildFile; fileRef = E6D7627A1A8D0B8200C0762A /* CheckBoxAlertView.m */; };
 		E6D8783C1A7AC3E200DD242B /* AlarmAlertViewTests.m in Sources */ = {isa = PBXBuildFile; fileRef = E6D8783B1A7AC3E200DD242B /* AlarmAlertViewTests.m */; };
 /* End PBXBuildFile section */
 
@@ -48,8 +47,6 @@
 		E6182F401A66D794008AF863 /* AlarmAlertView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = AlarmAlertView.m; path = AlarmAlertController/AlarmAlertView.m; sourceTree = "<group>"; };
 		E6366C791A8295C4009DC337 /* UIResponder+FirstResponder.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = "UIResponder+FirstResponder.h"; path = "../UIResponder+FirstResponder.h"; sourceTree = "<group>"; };
 		E6366C7A1A8295C4009DC337 /* UIResponder+FirstResponder.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = "UIResponder+FirstResponder.m"; path = "../UIResponder+FirstResponder.m"; sourceTree = "<group>"; };
-		E6D762791A8D0B8200C0762A /* CheckBoxAlertView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CheckBoxAlertView.h; sourceTree = "<group>"; };
-		E6D7627A1A8D0B8200C0762A /* CheckBoxAlertView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CheckBoxAlertView.m; sourceTree = "<group>"; };
 		E6D8783B1A7AC3E200DD242B /* AlarmAlertViewTests.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = AlarmAlertViewTests.m; path = ../AlarmAlertViewTests.m; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
@@ -76,8 +73,6 @@
 			children = (
 				E6182F3F1A66D794008AF863 /* AlarmAlertView.h */,
 				E6182F401A66D794008AF863 /* AlarmAlertView.m */,
-				E6D762791A8D0B8200C0762A /* CheckBoxAlertView.h */,
-				E6D7627A1A8D0B8200C0762A /* CheckBoxAlertView.m */,
 				E6182F181A66D78C008AF863 /* AlarmAlertController */,
 				E6182F321A66D78C008AF863 /* AlarmAlertControllerTests */,
 				E6182F171A66D78C008AF863 /* Products */,
@@ -241,7 +236,6 @@
 				E6366C7B1A8295C4009DC337 /* UIResponder+FirstResponder.m in Sources */,
 				E6182F1F1A66D78C008AF863 /* AppDelegate.m in Sources */,
 				E6182F411A66D794008AF863 /* AlarmAlertView.m in Sources */,
-				E6D7627B1A8D0B8200C0762A /* CheckBoxAlertView.m in Sources */,
 				E6182F1C1A66D78C008AF863 /* main.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;

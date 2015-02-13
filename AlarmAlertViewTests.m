@@ -68,7 +68,7 @@
     //given
     AlarmAlertView *alert = [self getNormalInstance];
     //when
-    [alert addActionWithTitle:@"Cancel" style:AlertButtonCancel handler:^(AlarmAlertButtonItem *item) {
+    [alert addActionWithTitle:@"Cancel" style:AlertButtonCancel handler:^(AlarmAlertButtonItem *item, AlarmAlertView *alertView) {
         
     }];
     [alert show];
@@ -137,7 +137,7 @@
     //when
     [alert addActionWithTitle:@"Good" style:AlertButtonStyleDefault handler:nil];
     [alert addActionWithTitle:@"Today is a good day." style:AlertButtonStyleDefault handler:nil];
-    [alert addActionWithTitle:@"Cancel" style:AlertButtonCancel handler:^(AlarmAlertButtonItem *item) {
+    [alert addActionWithTitle:@"Cancel" style:AlertButtonCancel handler:^(AlarmAlertButtonItem *item, AlarmAlertView *alertView) {
         
     }];
     [alert show];

@@ -52,16 +52,16 @@ typedef NS_ENUM(NSUInteger, AlarmAlertStyle) {
 
 //adding buttons (similar to UIAlertController)
 - (void)addActionWithTitle:(NSString *)title;
-- (void)addActionWithTitle:(NSString *)title handler:(void (^)(AlarmAlertButtonItem *item))handler;
-- (void)addActionWithTitle:(NSString *)title style:(AlertButtonStyle)style handler:(void (^)(AlarmAlertButtonItem *item))handler;
-- (void)addActionWithTitle:(NSString *)title titleColor:(UIColor *)color style:(AlertButtonStyle)style handler:(void (^)(AlarmAlertButtonItem *item))handler;
+- (void)addActionWithTitle:(NSString *)title handler:(void (^)(AlarmAlertButtonItem *item, AlarmAlertView *alertView))handler;
+- (void)addActionWithTitle:(NSString *)title style:(AlertButtonStyle)style handler:(void (^)(AlarmAlertButtonItem *item, AlarmAlertView *alertView))handler;
+- (void)addActionWithTitle:(NSString *)title titleColor:(UIColor *)color style:(AlertButtonStyle)style handler:(void (^)(AlarmAlertButtonItem *item, AlarmAlertView *alertView))handler;
 
 - (void)show;
 - (void)dismiss;
 
 @end
 
-typedef void(^SelectionHandler) (AlarmAlertButtonItem *item);
+typedef void(^SelectionHandler) (AlarmAlertButtonItem *item, AlarmAlertView *alertView);
 
 @interface AlarmAlertButtonItem : NSObject
 
@@ -74,7 +74,7 @@ typedef void(^SelectionHandler) (AlarmAlertButtonItem *item);
 @property (nonatomic, strong) SelectionHandler selectionHandler;
 @property (nonatomic) AlertButtonStyle buttonStyle;
 
-- (instancetype)initWithTitle:(NSString *)title andButtonTitleColor:(UIColor *)color andStyle:(AlertButtonStyle)style;
+- (instancetype)initWithTitle:(NSString *)title andButtonTitleColor:(UIColor *)color andStyle:(AlertButtonStyle)style andAlignment:(NSTextAlignment)alignment;
 - (void)changeToActionSheetButtonStyle:(UIColor *)themeColor;
 
 @end

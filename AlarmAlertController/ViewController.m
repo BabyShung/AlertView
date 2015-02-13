@@ -8,7 +8,6 @@
 
 #import "ViewController.h"
 #import "AlarmAlertView.h"
-#import "CheckBoxAlertView.h"
 
 @interface ViewController ()
 
@@ -25,7 +24,7 @@
 }
 - (IBAction)presentOneButton:(id)sender {
     AlarmAlertView *al = [[AlarmAlertView alloc] initWithTitle:@"Title" message:@"Message"];
-    [al addActionWithTitle:@"CancelCancelCancelncel" style:AlertButtonCancel handler:^(AlarmAlertButtonItem *item) {
+    [al addActionWithTitle:@"CancelCancelCancelncel" style:AlertButtonCancel handler:^(AlarmAlertButtonItem *item, AlarmAlertView *alertView) {
         NSLog(@"one button");
     }];
     [al show];
@@ -44,7 +43,7 @@
 - (IBAction)presentTwoButtons:(id)sender {
     AlarmAlertView *al = [[AlarmAlertView alloc] initWithTitle:@"Are you sure you want to log out?" message:nil];
     //al.theme.titleFontSize = 15;//you can modify the theme (style of the contentView)
-    [al addActionWithTitle:@"Cancel" style:AlertButtonCancel handler:^(AlarmAlertButtonItem *item) {
+    [al addActionWithTitle:@"Cancel" style:AlertButtonCancel handler:^(AlarmAlertButtonItem *item, AlarmAlertView *alertView) {
         NSLog(@"Cancel");
     }];
     [al addActionWithTitle:@"Passcode Settings" titleColor:[UIColor orangeColor] style:AlertButtonStyleDefault handler:nil];
@@ -53,7 +52,7 @@
 
 - (IBAction)presentTwoButtons2:(id)sender {
     AlarmAlertView *al = [[AlarmAlertView alloc] initWithTitle:@"Log out" message:@"Are you sure?"];
-    [al addActionWithTitle:@"Cancel" handler:^(AlarmAlertButtonItem *item) {
+    [al addActionWithTitle:@"Cancel" handler:^(AlarmAlertButtonItem *item, AlarmAlertView *alertView) {
         NSLog(@"Cancel");
     }];
     [al addActionWithTitle:@"Log out" titleColor:[UIColor orangeColor] style:AlertButtonStyleDefault handler:nil];
@@ -66,7 +65,7 @@
     //al.theme.ifTwoBtnsShouldInOneLine = NO;
     //al.theme.themeColor = [UIColor orangeColor];
     //al.theme.titleFontSize = 15;//you can modify the theme (style of the contentView)
-    [al addActionWithTitle:@"Passcode Settings" handler:^(AlarmAlertButtonItem *item) {
+    [al addActionWithTitle:@"Passcode Settings" handler:^(AlarmAlertButtonItem *item, AlarmAlertView *alertView) {
         NSLog(@"Cancel");
     }];
     [al addActionWithTitle:@"Not now"];
@@ -75,7 +74,7 @@
 
 - (IBAction)presentActionSheetOneButton:(id)sender {
     AlarmAlertView *al = [[AlarmAlertView alloc] initWithTitle:@"Title" message:@"Message" preferredStyle:AAActionSheet];
-    [al addActionWithTitle:@"Option1" handler:^(AlarmAlertButtonItem *item) {
+    [al addActionWithTitle:@"Option1" handler:^(AlarmAlertButtonItem *item, AlarmAlertView *alertView) {
         NSLog(@"Option1");
     }];
     [al show];
@@ -83,14 +82,14 @@
 
 - (IBAction)presentMultiButtons:(id)sender {
     AlarmAlertView *al = [[AlarmAlertView alloc] initWithTitle:@"Title" message:@"Message"];
-    [al addActionWithTitle:@"Option1" handler:^(AlarmAlertButtonItem *item) {
+    [al addActionWithTitle:@"Option1" handler:^(AlarmAlertButtonItem *item, AlarmAlertView *alertView) {
         NSLog(@"Option1");
     }];
     [al addActionWithTitle:@"Option2"];
     [al addActionWithTitle:@"Option3"];
     [al addActionWithTitle:@"Option4"];
     [al addActionWithTitle:@"Option5"];
-    [al addActionWithTitle:@"Cancel" handler:^(AlarmAlertButtonItem *item) {
+    [al addActionWithTitle:@"Cancel" handler:^(AlarmAlertButtonItem *item, AlarmAlertView *alertView) {
         NSLog(@"Cancel");
     }];
     [al show];
@@ -99,7 +98,7 @@
 - (IBAction)presentActionSheet:(id)sender {
     AlarmAlertView *al = [[AlarmAlertView alloc] initWithTitle:@"Title" message:@"Message" preferredStyle:AAActionSheet];
     al.theme.themeColor = [UIColor orangeColor];
-    [al addActionWithTitle:@"Option1" handler:^(AlarmAlertButtonItem *item) {
+    [al addActionWithTitle:@"Option1" handler:^(AlarmAlertButtonItem *item, AlarmAlertView *alertView) {
         NSLog(@"Option1");
     }];
     [al addActionWithTitle:@"Option2"];
@@ -118,7 +117,7 @@
     
     AlarmAlertView *al = [[AlarmAlertView alloc] initWithTitle:@"Custom" message:@"View" customView:cView preferredStyle:AACentered subViewOfView:nil];
     al.theme.themeColor = [UIColor blueColor];
-    [al addActionWithTitle:@"Cancel" handler:^(AlarmAlertButtonItem *item) {
+    [al addActionWithTitle:@"Cancel" handler:^(AlarmAlertButtonItem *item, AlarmAlertView *alertView) {
         NSLog(@"Option1");
     }];
     [al addActionWithTitle:@"Send"];
@@ -135,13 +134,13 @@
 //    [al addAction:myItem andTarget:self andSelector:@selector(myActionButtonPressed:)];
 //    [al show];
     
-    CheckBoxAlertView *cl = [[CheckBoxAlertView alloc] initWithTitle:@"hh" message:nil checkItems:@[@"aa",@"bb",@"cc"] preferredStyle:AACentered subViewOfView:nil];
-    
-    [cl addActionWithTitle:@"Cancel" handler:^(AlarmAlertButtonItem *item) {
-        NSLog(@"Option1");
-    }];
-    [cl addActionWithTitle:@"Send"];
-    [cl show];
+//    CheckBoxAlertView *cl = [[CheckBoxAlertView alloc] initWithTitle:@"hh" message:nil checkItems:@[@"aa",@"bb",@"cc"] preferredStyle:AACentered subViewOfView:nil];
+//    
+//    [cl addActionWithTitle:@"Cancel" handler:^(AlarmAlertButtonItem *item) {
+//        NSLog(@"Option1");
+//    }];
+//    [cl addActionWithTitle:@"Send"];
+//    [cl show];
 }
 
 
