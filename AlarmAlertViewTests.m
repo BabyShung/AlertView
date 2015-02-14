@@ -17,11 +17,13 @@
 
 @implementation AlarmAlertViewTests
 
-- (void)setUp {
+- (void)setUp
+{
     [super setUp];
 }
 
-- (void)tearDown {
+- (void)tearDown
+{
     [super tearDown];
     
 }
@@ -35,8 +37,8 @@
 
 - (void)CheckTitleMessageSame:(AlarmAlertView *)alert
 {
-    XCTAssertEqual(alert.title, @"Title", @"title not same");
-    XCTAssertEqual(alert.message, @"Message", @"Message not same");
+    XCTAssertEqual(alert.title.string, @"Title", @"title not same");
+    XCTAssertEqual(alert.message.string, @"Message", @"Message not same");
 }
 
 #pragma mark - tests
@@ -47,9 +49,9 @@
     AlarmAlertView *alert = [self getNormalInstance];
     //when
     [alert show];
-    NSString *title1 = alert.title;
+    NSString *title1 = alert.title.string;
     [alert show];
-    NSString *title2 = alert.title;
+    NSString *title2 = alert.title.string;
     //then
     XCTAssertEqualObjects(title1, title2, @"call multiple show should reuse its instantiated properties");
     [alert dismiss];
@@ -75,7 +77,7 @@
     //then
     [self CheckTitleMessageSame:alert];
     AlarmAlertButtonItem *item = (AlarmAlertButtonItem *)alert.buttonItems[0];
-    XCTAssertEqual(item.buttonTitle.string, @"Cancel", @"button title not Cancel");
+    XCTAssertEqualObjects(item.buttonTitle.string, @"Cancel", @"button title not Cancel");
     XCTAssertEqual(alert.buttonItems.count, 1, @"button should be only one");
     XCTAssertNoThrow([alert dismiss], "should dismiss.");
 }
@@ -107,8 +109,8 @@
     [self CheckTitleMessageSame:alert];
     XCTAssertEqual(alert.buttonItems.count, 2, @"button should be only one");
     AlarmAlertButtonItem *item = (AlarmAlertButtonItem *)alert.buttonItems[1];
-    XCTAssertEqual(item.buttonTitle.string, @"Cancel", @"if any text is long than 14,\
-                   should have up-down style and cancel at the bottom");
+    XCTAssertEqualObjects(item.buttonTitle.string, @"Cancel", @"if any text is long than 14,\
+                          should have up-down style and cancel at the bottom");
     XCTAssertNoThrow([alert dismiss], "should dismiss.");
 }
 
@@ -125,7 +127,7 @@
     //then
     [self CheckTitleMessageSame:alert];
     AlarmAlertButtonItem *item = (AlarmAlertButtonItem *)alert.buttonItems[1];
-    XCTAssertEqual(item.buttonTitle.string, @"Good", @"button title not Good");
+    XCTAssertEqualObjects(item.buttonTitle.string, @"Good", @"button title not Good");
     XCTAssertEqual(alert.buttonItems.count, 4, @"button should be only one");
     XCTAssertNoThrow([alert dismiss], "should dismiss.");
 }
@@ -144,10 +146,9 @@
     //then
     [self CheckTitleMessageSame:alert];
     AlarmAlertButtonItem *item = (AlarmAlertButtonItem *)alert.buttonItems[0];
-    XCTAssertEqual(item.buttonTitle.string, @"Good", @"button title not Good");
+    XCTAssertEqualObjects(item.buttonTitle.string, @"Good", @"button title not Good");
     XCTAssertEqual(alert.buttonItems.count, 3, @"button should be only one");
     XCTAssertNoThrow([alert dismiss], "should dismiss.");
-    
 }
 
 - (void)testPerformanceExample {

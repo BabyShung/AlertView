@@ -1,9 +1,6 @@
 
 #import "AlarmAlertView.h"
 
-#define buttonFontSize IS_IPHONE_5_OR_LESS?15.0:16.0
-#define defaultFontColor [UIColor colorWithRed:85.0/255 green:85.0/255 blue:85.0/255 alpha:1]
-
 #pragma mark - AlarmAlertButton
 
 @interface AlarmAlertButton : UIButton
@@ -103,8 +100,8 @@ static __weak id currentFirstResponder;
 {
     if (self = [super init]) {
         _theme = [[AlarmAlertTheme alloc] initWithDefaultTheme];//init theme first
-        _title = title;
-        _message = message;
+        _title = [AlarmAlertView attributeStringWithTitle:title attributes:@{NSFontAttributeName : [UIFont boldSystemFontOfSize:self.theme.titleFontSize], NSForegroundColorAttributeName : self.theme.titleColor} alignment:NSTextAlignmentCenter];
+        _message = [AlarmAlertView attributeStringWithTitle:message attributes:@{NSFontAttributeName : [UIFont systemFontOfSize:self.theme.messageFontSize], NSForegroundColorAttributeName : self.theme.messageColor} alignment:NSTextAlignmentCenter];
         _customView = customView;
         _theme.popupStyle = style;
         _mutableButtonItems = [NSMutableArray array];
@@ -137,7 +134,7 @@ static __weak id currentFirstResponder;
     [self.mutableButtonItems addObject:item];
 }
 
-#pragma mark - getter
+#pragma mark - getter & setter
 
 - (NSArray *)buttonItems
 {
@@ -169,15 +166,13 @@ static __weak id currentFirstResponder;
     
     //adding title label
     if (self.title) {
-        NSAttributedString *aTitle = [AlarmAlertView attributeStringWithTitle:self.title attributes:@{NSFontAttributeName : [UIFont boldSystemFontOfSize:self.theme.titleFontSize], NSForegroundColorAttributeName : self.theme.titleColor} alignment:NSTextAlignmentCenter];
-        UILabel *title = [self multilineLabelWithAttributedString:aTitle];
+        UILabel *title = [self multilineLabelWithAttributedString:self.title];
         [self.contentView addSubview:title];
     }
     
     //adding msg label
     if (self.message) {
-        NSAttributedString *aMessage = [AlarmAlertView attributeStringWithTitle:self.message attributes:@{NSFontAttributeName : [UIFont systemFontOfSize:self.theme.messageFontSize], NSForegroundColorAttributeName : self.theme.messageColor} alignment:NSTextAlignmentCenter];
-        UILabel *label = [self multilineLabelWithAttributedString:aMessage];
+        UILabel *label = [self multilineLabelWithAttributedString:self.message];
         [self.contentView addSubview:label];
     }
     
@@ -242,7 +237,7 @@ static __weak id currentFirstResponder;
                  
                  //**** CASES: is Button or Label or HLine or VLine ****
                  
-                 if ([view isKindOfClass:[UIButton class]]) {//is a button, set height constraint
+                 if ([view isKindOfClass:[UIButton class]]) {
                      AlarmAlertButton *button = (AlarmAlertButton *)view;
                      NSDictionary *btnDict = @{@"btnHeight":@(button.item.buttonHeight)};
                      
@@ -258,7 +253,7 @@ static __weak id currentFirstResponder;
                      }else if (self.mutableButtonItems.count == 1){
                          NSDictionary *relatedViews = @{@"view":view,
                                                         @"hLine":self.hLine};
-                         //padding to top
+                         //stick to the horizontal line
                          [self.contentView addConstraints:[NSLayoutConstraint constraintsWithVisualFormat:@"V:[hLine][view]" options:kNilOptions metrics:nil views:relatedViews]];
                          //leftRight padding
                          [self.contentView addConstraints:[NSLayoutConstraint constraintsWithVisualFormat:@"H:|[view]|" options:kNilOptions metrics:nil views:NSDictionaryOfVariableBindings(view)]];
@@ -271,14 +266,14 @@ static __weak id currentFirstResponder;
                          //padding to top
                          [self.contentView addConstraints:[NSLayoutConstraint constraintsWithVisualFormat:@"V:[hLine][view]" options:kNilOptions metrics:nil views:relatedViews]];
                          
-                         //leftRight
+                         //the first button should stay in the left of the vertical line
                          if (button.item == self.mutableButtonItems[0]) {
                              [self.contentView addConstraints:[NSLayoutConstraint constraintsWithVisualFormat:@"H:|[view][vLine]" options:kNilOptions metrics:nil views:relatedViews]];
                          }else{
                              [self.contentView addConstraints:[NSLayoutConstraint constraintsWithVisualFormat:@"H:[vLine][view]|" options:kNilOptions metrics:nil views:relatedViews]];
                          }
                      }
-                     else{
+                     else{//other button cases, just have padding in every direction
                          //padding to top
                          [self.contentView addConstraints:[NSLayoutConstraint constraintsWithVisualFormat:@"V:[previousSubView]-(topDownPadding)-[view]" options:kNilOptions metrics:metrics views:NSDictionaryOfVariableBindings(previousSubView,view)]];
                          
@@ -292,7 +287,7 @@ static __weak id currentFirstResponder;
                      //leftRight padding
                      [self.contentView addConstraints:[NSLayoutConstraint constraintsWithVisualFormat:@"H:|-(cLeft)-[view]-(cRight)-|" options:kNilOptions metrics:metrics views:NSDictionaryOfVariableBindings(view)]];
                  }
-                 else if (view == self.hLine) {
+                 else if (view == self.hLine) {//the horizontal line above the bottom buttons
                      NSString *format;
                      if (previousSubView == self.customView)
                          format = @"V:[previousSubView][view]";
@@ -306,7 +301,7 @@ static __weak id currentFirstResponder;
                      //leftRight padding
                      [self.contentView addConstraints:[NSLayoutConstraint constraintsWithVisualFormat:@"H:|[view]|" options:kNilOptions metrics:nil views:NSDictionaryOfVariableBindings(view)]];
                  }
-                 else if (view == self.vLine) {
+                 else if (view == self.vLine) {//the vertical line between two buttons
                      NSDictionary *relatedViews = @{@"view":view,
                                                     @"hLine":self.hLine};
                      //padding to top
@@ -326,7 +321,8 @@ static __weak id currentFirstResponder;
              }
          }
          
-         if (index == self.contentView.subviews.count - 1) {//buttom padding
+         //the last view, we need to set the buttom padding
+         if (index == self.contentView.subviews.count - 1) {
              
              CGFloat buttomPadding;
              if ([self isActionSheet]) {
@@ -556,6 +552,8 @@ static __weak id currentFirstResponder;
 
 + (NSAttributedString *)attributeStringWithTitle:(NSString *)title attributes:(NSDictionary *)dict alignment:(NSTextAlignment)alignment
 {
+    if (!title)
+        return nil;
     NSMutableParagraphStyle *paragraphStyle = NSMutableParagraphStyle.new;
     paragraphStyle.lineBreakMode = NSLineBreakByWordWrapping;
     paragraphStyle.alignment = alignment;

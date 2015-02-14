@@ -12,6 +12,9 @@
 
 #define IS_IPHONE_5_OR_LESS (IS_IPHONE && SCREEN_MAX_LENGTH < 667.0)
 
+#define buttonFontSize IS_IPHONE_5_OR_LESS?15.0:16.0
+#define defaultFontColor [UIColor colorWithRed:85.0/255 green:85.0/255 blue:85.0/255 alpha:1]
+
 @class AlarmAlertTheme, AlarmAlertButton, AlarmAlertButtonItem;
 
 typedef NS_ENUM(NSInteger, AlertButtonStyle) {
@@ -27,8 +30,8 @@ typedef NS_ENUM(NSUInteger, AlarmAlertStyle) {
 
 @interface AlarmAlertView : NSObject
 
-@property (nonatomic, copy) NSString *title;
-@property (nonatomic, copy) NSString *message;
+@property (nonatomic, strong) NSAttributedString *title;
+@property (nonatomic, strong) NSAttributedString *message;
 @property (nonatomic, readonly) NSArray *buttonItems;
 @property (nonatomic, copy) AlarmAlertTheme *theme;
 
