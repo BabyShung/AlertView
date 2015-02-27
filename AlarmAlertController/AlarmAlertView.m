@@ -1,6 +1,19 @@
 
 #import "AlarmAlertView.h"
 
+#define SYSTEM_VERSION_LESS_THAN(v) ([[[UIDevice currentDevice] systemVersion] compare:v options:NSNumericSearch] == NSOrderedAscending)
+
+#define IS_IPAD (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad)
+#define IS_IPHONE (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPhone)
+
+#define SCREEN_WIDTH ([[UIScreen mainScreen] bounds].size.width)
+#define SCREEN_HEIGHT ([[UIScreen mainScreen] bounds].size.height)
+#define SCREEN_MAX_LENGTH (MAX(SCREEN_WIDTH, SCREEN_HEIGHT))
+
+#define IS_IPHONE_5_OR_LESS (IS_IPHONE && SCREEN_MAX_LENGTH < 667.0)
+
+#define defaultFontColor [UIColor colorWithRed:85.0/255 green:85.0/255 blue:85.0/255 alpha:1]
+
 #pragma mark - AlarmAlertButton
 
 @interface AlarmAlertButton : UIButton
@@ -229,8 +242,11 @@ static __weak id currentFirstResponder;
              //padding to the top of contentView
              [self.contentView addConstraints:[NSLayoutConstraint constraintsWithVisualFormat:@"V:|-(cTop)-[view]" options:kNilOptions metrics:metrics views:NSDictionaryOfVariableBindings(view)]];
              
-             //leftRight padding
-             [self.contentView addConstraints:[NSLayoutConstraint constraintsWithVisualFormat:@"H:|-(cLeft)-[view]-(cRight)-|" options:kNilOptions metrics:metrics views:NSDictionaryOfVariableBindings(view)]];
+             //leftRight padding for Title
+             [self.contentView addConstraints:[NSLayoutConstraint constraintsWithVisualFormat:
+                                               [NSString stringWithFormat:@"H:|-(%f)-[view]-(%f)-|",
+                                                self.theme.contentViewInsets.left - 4,
+                                                self.theme.contentViewInsets.right - 4] options:kNilOptions metrics:metrics views:NSDictionaryOfVariableBindings(view)]];
          }else {
              UIView *previousSubView = [self.contentView.subviews objectAtIndex:index - 1];
              if (previousSubView) {
@@ -297,7 +313,7 @@ static __weak id currentFirstResponder;
                      //padding to top
                      [self.contentView addConstraints:[NSLayoutConstraint constraintsWithVisualFormat:format options:kNilOptions metrics:metrics views:NSDictionaryOfVariableBindings(previousSubView,view)]];
                      //height
-                     [self.contentView addConstraints:[NSLayoutConstraint constraintsWithVisualFormat:@"V:[view(0.5)]" options:kNilOptions metrics:nil views:NSDictionaryOfVariableBindings(view)]];
+                     [self.contentView addConstraints:[NSLayoutConstraint constraintsWithVisualFormat:@"V:[view(1)]" options:kNilOptions metrics:nil views:NSDictionaryOfVariableBindings(view)]];
                      //leftRight padding
                      [self.contentView addConstraints:[NSLayoutConstraint constraintsWithVisualFormat:@"H:|[view]|" options:kNilOptions metrics:nil views:NSDictionaryOfVariableBindings(view)]];
                  }
@@ -309,7 +325,7 @@ static __weak id currentFirstResponder;
                      //centerX
                      [self.contentView addConstraint:[NSLayoutConstraint constraintWithItem:view attribute:NSLayoutAttributeCenterX relatedBy:NSLayoutRelationEqual toItem:self.contentView attribute:NSLayoutAttributeCenterX multiplier:1.0 constant:0]];
                      //width
-                     [self.contentView addConstraints:[NSLayoutConstraint constraintsWithVisualFormat:@"H:[view(0.5)]" options:kNilOptions metrics:nil views:NSDictionaryOfVariableBindings(view)]];
+                     [self.contentView addConstraints:[NSLayoutConstraint constraintsWithVisualFormat:@"H:[view(1)]" options:kNilOptions metrics:nil views:NSDictionaryOfVariableBindings(view)]];
                      //to contentView bottom
                      [self.contentView addConstraints:[NSLayoutConstraint constraintsWithVisualFormat:@"V:[view]|" options:kNilOptions metrics:nil views:NSDictionaryOfVariableBindings(view)]];
                  }else if (view == self.customView){
@@ -371,7 +387,7 @@ static __weak id currentFirstResponder;
     if (IS_IPAD) {
         return 320;
     } else if (IS_IPHONE_5_OR_LESS){
-        return 272;
+        return 278;
     } else {
         return 310;
     }
@@ -606,14 +622,13 @@ static __weak id currentFirstResponder;
         self.buttonStyle = style;
         self.cornerRadius = 0;
         self.backgroundColor = [UIColor whiteColor];
-        self.buttonHeight = IS_IPHONE_5_OR_LESS?47:52;
+        self.buttonHeight = [AlarmAlertButtonItem getButtonHeight];
         UIColor *buttonTitleColor = color?color:defaultFontColor;
         switch (style) {
             case AlertButtonStyleDefault:
                 //do nothing
                 break;
             case AlertButtonCancel:
-                //buttonTitleColor = defaultFontColor;
                 break;
             case AlertButtonDestructive:
                 self.backgroundColor = [UIColor redColor];
@@ -622,7 +637,7 @@ static __weak id currentFirstResponder;
                 break;
         }
         
-        self.buttonTitle = [AlarmAlertView attributeStringWithTitle:title attributes:@{NSFontAttributeName : [UIFont boldSystemFontOfSize:buttonFontSize], NSForegroundColorAttributeName : buttonTitleColor} alignment:alignment];
+        self.buttonTitle = [AlarmAlertView attributeStringWithTitle:title attributes:@{NSFontAttributeName : [UIFont boldSystemFontOfSize:[self getButtonFontSize]], NSForegroundColorAttributeName : buttonTitleColor} alignment:alignment];
     }
     return self;
 }
@@ -631,9 +646,31 @@ static __weak id currentFirstResponder;
 {
     self.cornerRadius = 3;
     self.backgroundColor = themeColor;
-    self.buttonHeight = IS_IPHONE_5_OR_LESS? 44 : 47;
-    NSAttributedString *buttonString = [AlarmAlertView attributeStringWithTitle:self.buttonTitle.string attributes:@{NSFontAttributeName : [UIFont boldSystemFontOfSize:buttonFontSize], NSForegroundColorAttributeName : [UIColor whiteColor]} alignment:NSTextAlignmentCenter];
+    self.buttonHeight = [AlarmAlertButtonItem getButtonHeight] - 3;
+    NSAttributedString *buttonString = [AlarmAlertView attributeStringWithTitle:self.buttonTitle.string attributes:@{NSFontAttributeName : [UIFont boldSystemFontOfSize:[self getButtonFontSize]], NSForegroundColorAttributeName : [UIColor whiteColor]} alignment:NSTextAlignmentCenter];
     self.buttonTitle = buttonString;
+}
+
++ (CGFloat)getButtonHeight
+{
+    if (IS_IPAD) {
+        return 54;
+    } else if (IS_IPHONE_5_OR_LESS){
+        return 48;
+    } else {
+        return 52;
+    }
+}
+
+- (CGFloat)getButtonFontSize
+{
+    if (IS_IPAD) {
+        return 17;
+    } else if (IS_IPHONE_5_OR_LESS){
+        return 16;
+    } else {
+        return 17;
+    }
 }
 
 @end
@@ -651,16 +688,21 @@ static __weak id currentFirstResponder;
         self.titleColor = self.messageColor = self.themeColor = color;
         self.cornerRadius = 6.0f;
         self.ifTwoBtnsShouldInOneLine = YES;
-        if (IS_IPHONE_5_OR_LESS || IS_IPAD) {
-            self.titleFontSize = 15.f;
+        if (IS_IPHONE_5_OR_LESS) {
+            self.titleFontSize = 16.f;
             self.messageFontSize = 14.f;
-            self.contentVerticalPadding = 10.0f;
-            self.contentViewInsets = UIEdgeInsetsMake(16.0f, 16.0f, 10.0f, 16.0f);
+            self.contentVerticalPadding = 12.0f;
+            self.contentViewInsets = UIEdgeInsetsMake(16.0f, 17.0f, 10.0f, 17.0f);
+        } else if (IS_IPAD){
+            self.titleFontSize = 17.f;
+            self.messageFontSize = 15.f;
+            self.contentVerticalPadding = 13.0f;
+            self.contentViewInsets = UIEdgeInsetsMake(18.0f, 16.0f, 10.0f, 16.0f);
         } else {    //iphone 6 or up
-            self.titleFontSize = 18.f;
+            self.titleFontSize = 17.f;
             self.messageFontSize = 15.f;
             self.contentVerticalPadding = 12.0f;
-            self.contentViewInsets = UIEdgeInsetsMake(17.0f, 15.0f, 12.0f, 15.0f);
+            self.contentViewInsets = UIEdgeInsetsMake(17.0f, 20.0f, 12.0f, 20.0f);
         }
     }
     return self;
